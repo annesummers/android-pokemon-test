@@ -1,0 +1,73 @@
+[versions]
+android-compile = "34"
+android-min = "29"
+android-target = "34"
+
+library-group = "com.giganticsheep.common"
+library-version = "1.0.0"
+
+agp = "8.3.2"
+kotlin = "1.9.23"
+ksp = "1.9.23-1.0.20"
+
+core-ktx = "1.13.1"
+coroutines = "1.8.0"
+
+mockk = "1.13.9"
+test-junit = "4.13.2"
+test-runner = "1.5.2"
+test-core = "1.5.0"
+
+linter = "3.14.0"
+ktor = "2.3.8"
+kotlinx-serialization-json = "1.6.0"
+
+annotation = "1.7.1"
+assertK = "0.28.0"
+turbine = "1.0.0"
+
+java = "17"
+
+[libraries]
+
+kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+
+ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-encoding = { group = "io.ktor", name = "ktor-client-encoding", version.ref = "ktor" }
+ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
+
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+
+test-kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+test-kotlin-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
+
+test-kotlin-annotations = { group = "org.jetbrains.kotlin", name = "kotlin-test-annotations-common", version.ref = "kotlin" }
+test-kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
+test-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
+
+test-assertK = { group = "com.willowtreeapps.assertk", name = "assertk", version.ref = "assertK" }
+test-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+
+test-junit = { group = "junit", name = "junit", version.ref = "test-junit" }
+
+annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+
+[bundles]
+
+test = [ "test-kotlin", "test-kotlin-annotations", "test-kotlin-coroutines", "test-assertK", "test-turbine" ]
+ktor = [ "ktor-core", "ktor-encoding", "ktor-logging", "ktor-contentNegotiation", "ktor-serialization-json", "ktor-mock" ]
+
+[plugins]
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-linter = { id = "org.jmailen.kotlinter", version.ref = "linter" }
+#kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
