@@ -32,22 +32,6 @@ abstract class ChildNavigationGraph protected constructor(
     final override val routeString = "${parentGraph.routeString}${details.asRoute}"
 }
 
-abstract class NestedNavigationGraph protected constructor(
-    navigation: Navigation,
-    navHostController: NavHostController,
-    private val parentGraph: NavigationGraph,
-) : BaseNavigationGraph<NestedScreenDestination>(navigation, navHostController) {
-
-    final override val subGraphs: List<NestedNavigationGraph> = listOf()
-
-    final override val graphNavEntry
-        get() = parentGraph.navHostController.currentBackStackEntry!!
-
-    final override val routeString = details.asRoute
-
-    final override val navOptions = NavOptions.Builder()
-}
-
 abstract class BaseNavigationGraph<S : BaseScreenDestination> internal constructor(
     navigation: Navigation,
     override val navHostController: NavHostController,
@@ -99,7 +83,7 @@ abstract class BaseNavigationGraph<S : BaseScreenDestination> internal construct
     override fun request(
         popUpTo: DestinationDetails?,
         popUpInclusive: Boolean,
-        args: Map<String, String>,
+        args: Map<String, String?>,
     ) = RequestedDestination(
         destination = this,
         popUpToString = popUpTo?.let { find(it)?.routeString },

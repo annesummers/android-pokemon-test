@@ -49,7 +49,7 @@ internal class HttpStubsTest {
             Call.TEST_GET3 -> stub(callData) {
                 filename = "get_filename_$id"
                 status = HttpStatusCode.OK
-                substitution = id
+                regexSubstitution = id
             }
             Call.TEST_PUT -> stub(callData) {
                 filename = "put_filename"

@@ -3,8 +3,6 @@ package com.giganticsheep.pokemon.data.network.client
 import android.util.Log
 import com.giganticsheep.logging.Logger
 import com.giganticsheep.logging.LoggerFactory
-import com.giganticsheep.network.client.HttpClientProvider
-import com.giganticsheep.pokemon.data.network.environment.PokemonEnvironment
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +11,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object HttpClientModule {
+internal object LoggerModule {
 
     @Provides
     @Singleton
@@ -49,16 +47,4 @@ internal object HttpClientModule {
             }
         }
     }
-
-    @Provides
-    @Singleton
-    fun providesHttpClientProvider(
-        httpClientFactory: OkHttpClientFactory,
-        stubClientFactory: StubClientFactory,
-    ) = HttpClientProvider(
-        mapOf(
-            PokemonEnvironment.Online to httpClientFactory,
-            PokemonEnvironment.Offline to stubClientFactory,
-        ),
-    )
 }

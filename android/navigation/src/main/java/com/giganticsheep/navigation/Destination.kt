@@ -4,14 +4,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 
-interface TabPotentialDestinationDetails : PotentialDestinationDetails {
-
-    val tabBarItem: TabBarItem
-
-    override val args: List<String>
-        get() = listOf()
-}
-
 interface PotentialDestinationDetails : DestinationDetails {
 
     override val asRoute: String
@@ -20,11 +12,11 @@ interface PotentialDestinationDetails : DestinationDetails {
     val args: List<String>
 
     fun withArgs(
-        vararg args: Pair<String, String>,
+        vararg args: Pair<String, String?>,
     ) = withArgs(args.toMap())
 
     fun withArgs(
-        args: Map<String, String>,
+        args: Map<String, String?>,
     ) = RequestedDestinationDetails(this, args.toMap())
 
     val asRequested
@@ -39,7 +31,7 @@ interface DestinationDetails {
 
 data class RequestedDestinationDetails(
     private val details: DestinationDetails,
-    val args: Map<String, String>,
+    val args: Map<String, String?>,
 ) : DestinationDetails {
 
     override val destinationName = details.destinationName
@@ -60,7 +52,7 @@ interface PotentialDestination : Destination {
     fun request(
         popUpTo: DestinationDetails? = null,
         popUpInclusive: Boolean = false,
-        args: Map<String, String> = mapOf(),
+        args: Map<String, String?> = mapOf(),
     ): RequestedDestination
 }
 
@@ -93,7 +85,7 @@ class RequestedDestination(
     destination: PotentialDestination,
     popUpToString: String?,
     popUpInclusive: Boolean,
-    args: Map<String, String>,
+    args: Map<String, String?>,
 ) : Destination {
 
     override val details = destination.details.withArgs(args)
@@ -112,7 +104,7 @@ class RequestedDestination(
         destination.routeString
     } else {
         details.args.entries.fold(destination.routeString) { route, entry ->
-            route.replace("{${entry.key}}", entry.value)
+            entry.value?.let { route.replace("{${entry.key}}", it) } ?: route
         }
     }
 }

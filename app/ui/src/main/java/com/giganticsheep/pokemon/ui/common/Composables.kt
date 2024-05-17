@@ -81,7 +81,9 @@ fun PokemonImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(pokemon.imageUrl)
                 .decoderFactory(SvgDecoder.Factory())
+                .placeholder(R.drawable.ic_image_default)
                 .crossfade(true)
+                .error(R.drawable.ic_image_default)
                 .build(),
             contentDescription = pokemon.name,
             contentScale = ContentScale.Fit,

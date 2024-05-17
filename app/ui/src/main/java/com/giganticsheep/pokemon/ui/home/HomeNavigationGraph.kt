@@ -8,6 +8,8 @@ import com.giganticsheep.navigation.NavigationGraph
 import com.giganticsheep.navigation.ScreenDestination
 import com.giganticsheep.pokemon.navigation.HomeNavigation
 import com.giganticsheep.pokemon.navigation.HomeNavigation.generationId
+import com.giganticsheep.pokemon.navigation.HomeNavigation.pokemonId
+import com.giganticsheep.pokemon.navigation.HomeNavigation.pokemonName
 import com.giganticsheep.pokemon.ui.generation.GenerationScreen
 import com.giganticsheep.pokemon.ui.generations.GenerationsScreen
 import com.giganticsheep.pokemon.ui.pokemon.PokemonScreen
@@ -61,7 +63,11 @@ class HomeNavigationGraph(
                 ) { graph, args ->
                     PokemonScreen(
                         navigationGraph = graph as HomeNavigationGraph,
-                        args = args,
+                        pokemonNameOrId = if (args[pokemonId] != "{$pokemonId}") {
+                            args[pokemonId] as String
+                        } else {
+                            args[pokemonName] as String
+                        },
                     )
                 }
         }

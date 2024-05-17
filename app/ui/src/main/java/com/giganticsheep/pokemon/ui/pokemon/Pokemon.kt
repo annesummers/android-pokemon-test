@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
-import com.giganticsheep.pokemon.navigation.HomeNavigation.pokemonName
 import com.giganticsheep.pokemon.ui.R
 import com.giganticsheep.pokemon.ui.common.PokemonImage
 import com.giganticsheep.pokemon.ui.common.PokemonTopAppBar
@@ -29,15 +28,14 @@ import com.giganticsheep.ui.DisplayDataState
 import com.giganticsheep.ui.HandleDisplayState
 import com.giganticsheep.ui.collectDisplayDataStateAsState
 
-// TODO tests
 @Composable
 internal fun PokemonScreen(
     navigationGraph: HomeNavigationGraph,
-    args: Map<String, String>,
+    pokemonNameOrId: String,
     pokemonViewModel: PokemonViewModel = hiltViewModel(navigationGraph.graphNavEntry),
 ) {
     LaunchedEffect(pokemonViewModel) {
-        pokemonViewModel.setup(args[pokemonName] as String)
+        pokemonViewModel.setup(pokemonNameOrId)
     }
 
     val pokemonState by pokemonViewModel.pokemonDisplayState.collectDisplayDataStateAsState()

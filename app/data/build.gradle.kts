@@ -11,8 +11,8 @@ val javaVersion = JavaVersion.toVersion(commonLibs.versions.java.get())
 
 val name = "data"
 
-group = commonLibs.versions.library.group.get()
-version = commonLibs.versions.library.version.get()
+group = pokemonLibs.versions.library.group.get()
+version = pokemonLibs.versions.library.version.get()
 
 android {
     namespace = "$group.$name"

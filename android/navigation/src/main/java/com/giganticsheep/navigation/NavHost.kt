@@ -1,6 +1,5 @@
 package com.giganticsheep.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,22 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-
-@Composable
-fun NestedNavHost(
-    navigationGraph: NestedNavigationGraph,
-    navigator: Navigator,
-    paddingValues: PaddingValues,
-) {
-    navigator.startCollecting(LocalLifecycleOwner.current)
-
-    NavHost(
-        navController = navigationGraph.navHostController,
-        startDestination = navigationGraph.startDestinationRoute,
-        route = navigationGraph.routeString,
-        modifier = Modifier.fillMaxSize(),
-    ) { buildGraph(navigationGraph, navigator, paddingValues) }
-}
 
 @Composable
 fun MainNavHost(
@@ -77,20 +60,4 @@ private fun NavGraphBuilder.buildGraph(
             route = graph.routeString,
         ) { buildGraph(graph, navigator) }
     }
-}
-
-private fun NavGraphBuilder.buildGraph(
-    navigationGraph: NestedNavigationGraph,
-    navigator: Navigator,
-    paddingValues: PaddingValues,
-) {
-    navigator.setupWithNavigationGraph(navigationGraph)
-
-    navigationGraph.screens.forEach { destination ->
-        composable(route = destination.routeString) {
-            destination.composable(navigationGraph, paddingValues)
-        }
-    }
-
-    // we don't have sub graphs in a nested navigation graph
 }

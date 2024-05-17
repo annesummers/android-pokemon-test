@@ -1,8 +1,6 @@
 package com.giganticsheep.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavOptions
 
 class ScreenDestination(
@@ -11,42 +9,13 @@ class ScreenDestination(
     popUpTo: DestinationDetails? = null,
     popUpInclusive: Boolean = false,
     override val graph: NonNestedNavigationGraph,
-    val composable: @Composable (NonNestedNavigationGraph, Map<String, String>) -> Unit,
+    val composable: @Composable (NonNestedNavigationGraph, Map<String, String?>) -> Unit,
 ) : BaseScreenDestination(
     details = details,
     singleTop = singleTop,
     popUpTo = popUpTo,
     popUpInclusive = popUpInclusive,
     graph = graph,
-)
-
-open class NestedScreenDestination(
-    details: PotentialDestinationDetails,
-    singleTop: Boolean = true,
-    override val popUpTo: DestinationDetails,
-    override val graph: NestedNavigationGraph,
-    val composable: @Composable (NestedNavigationGraph, PaddingValues) -> Unit,
-) : BaseScreenDestination(
-    details = details,
-    singleTop = singleTop,
-    popUpTo = popUpTo,
-    popUpInclusive = true,
-    graph = graph,
-)
-
-class NavigationBarScreenDestination(
-    details: PotentialDestinationDetails,
-    singleTop: Boolean = true,
-    popUpTo: DestinationDetails,
-    graph: NestedNavigationGraph,
-    val tabBarItem: TabBarItem,
-    composable: @Composable (NestedNavigationGraph, PaddingValues) -> Unit,
-) : NestedScreenDestination(
-    details = details,
-    singleTop = singleTop,
-    popUpTo = popUpTo,
-    graph = graph,
-    composable = composable,
 )
 
 abstract class BaseScreenDestination internal constructor(
@@ -72,7 +41,7 @@ abstract class BaseScreenDestination internal constructor(
     override fun request(
         popUpTo: DestinationDetails?,
         popUpInclusive: Boolean,
-        args: Map<String, String>,
+        args: Map<String, String?>,
     ) = RequestedDestination(
         destination = this,
         popUpToString = popUpTo?.let { internalGraph.findRoute(it) },
@@ -80,8 +49,3 @@ abstract class BaseScreenDestination internal constructor(
         args = args,
     )
 }
-
-data class TabBarItem(
-    val title: String,
-    val icon: ImageVector,
-)

@@ -36,6 +36,9 @@ internal class GenerationViewModel @Inject constructor(
     }
 
     fun onSpeciesClicked(name: String) {
-        mainNavigator.navigate(HomeNavigation.Screen.Pokemon.withArgs(pokemonName to name))
+        mainNavigator.navigate(
+            HomeNavigation.Screen.Pokemon
+                .withArgs(pokemonName to name),
+        )
     }
 }
