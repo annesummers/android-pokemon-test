@@ -37,12 +37,12 @@ internal class HttpStubsTest {
         override val calls: List<EndpointStubs.CallData> = Call.entries
 
         override fun getStub(
-            callData: EndpointStubs.CallData
+            callData: EndpointStubs.CallData,
         ) = when (callData as Call) {
             Call.TEST_GET -> stub(callData) {
                 filename = "get_filename"
             }
-            Call.TEST_GET2 ->  stub(callData) {
+            Call.TEST_GET2 -> stub(callData) {
                 filename = "get_filename2"
                 status = HttpStatusCode.OK
             }

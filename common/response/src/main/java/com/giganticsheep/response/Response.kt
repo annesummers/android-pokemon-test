@@ -46,7 +46,7 @@ sealed interface DataResponse<T : Any> : Response {
 
         override fun ignoreResult() = CompletableResponse.Success
 
-        override fun toState() = DataResponseState.Success(result)
+        override fun toState() = DataResponseState.Data(result)
 
         override suspend fun <U : Any> flatMap(
             next: suspend (T) -> DataResponse<U>,

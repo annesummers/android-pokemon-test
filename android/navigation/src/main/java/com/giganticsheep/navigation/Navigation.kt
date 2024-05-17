@@ -1,7 +1,5 @@
 package com.giganticsheep.navigation
 
-import com.giganticsheep.navigation.PotentialDestinationDetails
-
 abstract class Navigation(name: String, args: List<String>) {
 
     val details = object : PotentialDestinationDetails {

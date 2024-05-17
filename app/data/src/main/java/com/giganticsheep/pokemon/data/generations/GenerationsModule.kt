@@ -17,6 +17,7 @@ internal object GenerationsModule {
         httpClient: PokemonHttpClient,
         endpointManager: GenerationEndpointManager,
     ): GenerationsApi = InternalGenerationsApi(
-        httpClient, endpointManager
+        httpClient = httpClient,
+        endpointManager = endpointManager,
     )
 }

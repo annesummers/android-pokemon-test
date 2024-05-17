@@ -1,7 +1,11 @@
 package com.giganticsheep.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +35,67 @@ fun <T : Any> Flow<DisplayDataState<T>>.collectDisplayDataStateAsState(): State<
     collectAsState(initial = DisplayDataState.Uninitialised())
 
 @Composable
+fun <T : Any> ColumnScope.HandleDisplayState(
+    displayState: DisplayDataState<T>,
+    onLoading: @Composable () -> Unit = {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1F),
+            contentAlignment = Alignment.Center,
+        ) { ShowLoading() }
+    },
+    onError: @Composable (String, String?, () -> Unit) -> Unit = { error, title, onDismissed ->
+        ShowError(
+            error = error,
+            title = title,
+            onErrorDismissed = onDismissed,
+        )
+    },
+    content: @Composable ColumnScope.(T) -> Unit,
+) {
+    when (displayState) {
+        is DisplayState.Default -> content((displayState as DisplayDataState.Data).data)
+        is DisplayState.Error -> onError(
+            displayState.error,
+            displayState.title,
+            displayState.onDismissed,
+        )
+
+        is DisplayState.Loading -> onLoading()
+
+        else -> Unit
+    }
+}
+
+@Composable
+fun <T : Any> BoxScope.HandleDisplayState(
+    displayState: DisplayDataState<T>,
+    onLoading: @Composable () -> Unit = { ShowLoading() },
+    onError: @Composable (String, String?, () -> Unit) -> Unit = { error, title, onDismissed ->
+        ShowError(
+            error = error,
+            title = title,
+            onErrorDismissed = onDismissed,
+        )
+    },
+    content: @Composable BoxScope.(T) -> Unit,
+) {
+    when (displayState) {
+        is DisplayState.Default -> content((displayState as DisplayDataState.Data).data)
+        is DisplayState.Error -> onError(
+            displayState.error,
+            displayState.title,
+            displayState.onDismissed,
+        )
+
+        is DisplayState.Loading -> onLoading()
+
+        else -> Unit
+    }
+}
+
+@Composable
 fun <T : Any> HandleDisplayState(
     displayState: DisplayDataState<T>,
     onLoading: @Composable () -> Unit = { ShowLoading() },
@@ -44,7 +109,7 @@ fun <T : Any> HandleDisplayState(
     content: @Composable (T) -> Unit,
 ) {
     when (displayState) {
-        is DisplayState.Default -> content((displayState as DisplayDataState.Default).data)
+        is DisplayState.Default -> content((displayState as DisplayDataState.Data).data)
         is DisplayState.Error -> onError(
             displayState.error,
             displayState.title,
@@ -60,7 +125,7 @@ fun <T : Any> HandleDisplayState(
 @Composable
 fun HandleDisplayState(
     displayState: DisplayScreenState,
-    onLoading: @Composable () -> Unit = { ShowLoading() },
+    onLoading: @Composable () -> Unit = { ShowLoading(Modifier.fillMaxSize()) },
     onError: @Composable (String, String?, () -> Unit) -> Unit = { error, title, onDismissed ->
         ShowError(
             error = error,
@@ -85,12 +150,11 @@ fun HandleDisplayState(
 }
 
 @Composable
-private fun ShowLoading() {
+private fun ShowLoading(modifier: Modifier = Modifier) {
     val loadingString = stringResource(R.string.loading_description)
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .semantics { contentDescription = loadingString },
         contentAlignment = Alignment.Center,
     ) { CircularProgressIndicator() }
@@ -120,7 +184,7 @@ private fun ShowError(
                 ) {
                     Text(
                         text = stringResource(R.string.error_ok),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             },

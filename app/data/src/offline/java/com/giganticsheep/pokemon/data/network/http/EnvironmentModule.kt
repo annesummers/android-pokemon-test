@@ -1,6 +1,7 @@
 package com.giganticsheep.pokemon.data.network.http
 
-import com.giganticsheep.network.client.Environment
+import com.giganticsheep.network.environment.Environment
+import com.giganticsheep.pokemon.data.network.environment.PokemonEnvironment
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

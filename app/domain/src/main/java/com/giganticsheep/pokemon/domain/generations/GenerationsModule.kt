@@ -11,6 +11,6 @@ internal abstract class GenerationsModule {
 
     @Binds
     abstract fun providesGenerationsRepository(
-        generationsRepository: InternalGenerationsRepository
+        generationsRepository: InternalGenerationsRepository,
     ): GenerationsRepository
 }

@@ -65,8 +65,8 @@ internal class HttpStubbedConnectionTest {
                             get() = "key2"
                         override val type: HttpMethod
                             get() = TODO("Not yet implemented")
-                    }
-                )
+                    },
+                ),
             ) {
                 override fun getStub(
                     callData: EndpointStubs.CallData,
@@ -114,8 +114,8 @@ internal class HttpStubbedConnectionTest {
                             get() = "key3"
                         override val type: HttpMethod
                             get() = TODO("Not yet implemented")
-                    }
-                )
+                    },
+                ),
             ) {
                 override fun getStub(
                     callData: EndpointStubs.CallData,
@@ -172,8 +172,8 @@ internal class HttpStubbedConnectionTest {
                             get() = "key3"
                         override val type: HttpMethod
                             get() = TODO("Not yet implemented")
-                    }
-                )
+                    },
+                ),
             ) {
                 override fun getStub(
                     callData: EndpointStubs.CallData,
@@ -201,8 +201,8 @@ internal class HttpStubbedConnectionTest {
 
                     else -> error("")
                 }
-            }
-        )
+            },
+        ),
     )
 
     private val stubbedConnection = HttpStubbedConnection(stubProviders.stubs<HttpStubCollector>())
@@ -268,4 +268,3 @@ internal class HttpStubbedConnectionTest {
         callContext = coroutineContext,
     )
 }
-

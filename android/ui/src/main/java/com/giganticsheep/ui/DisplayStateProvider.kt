@@ -1,11 +1,11 @@
 package com.giganticsheep.ui
 
+import com.giganticsheep.android.ui.BuildConfig
+import com.giganticsheep.error.HandledException
 import com.giganticsheep.response.CompletableResponse
 import com.giganticsheep.response.CompletableResponseState
 import com.giganticsheep.response.DataResponse
 import com.giganticsheep.response.DataResponseState
-import com.giganticsheep.error.HandledException
-import com.giganticsheep.android.ui.BuildConfig
 import kotlinx.coroutines.flow.Flow
 import kotlin.coroutines.CoroutineContext
 
@@ -130,5 +130,3 @@ abstract class DisplayStateProvided<S : DisplayState> internal constructor(
 
     override fun onErrorDismissed() = _onErrorDismissed()
 }
-
-

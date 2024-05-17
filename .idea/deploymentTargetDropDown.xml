@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="HomeContentTest">
+        <State />
+      </entry>
       <entry key="android.app">
         <State />
       </entry>
@@ -20,6 +23,12 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-05-13T08:34:11.144059Z" />
         </State>
+      </entry>
+      <entry key="whenHomeContentWithScreenStateErrorThenShowError()">
+        <State />
+      </entry>
+      <entry key="whenShowPokemonAndPokemonClickedThenAssertIsClicked()">
+        <State />
       </entry>
     </value>
   </component>

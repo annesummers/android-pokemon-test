@@ -42,9 +42,9 @@ internal abstract class StubCollector<
 
     val stubs by lazy {
         stubs
-        .asList()
-        .fold(mutableListOf()) { acc: MutableList<Stub>, stub: Stubs ->
-            acc.apply { addAll(stub.stubs) }
-        }
+            .asList()
+            .fold(mutableListOf()) { acc: MutableList<Stub>, stub: Stubs ->
+                acc.apply { addAll(stub.stubs) }
+            }
     }
 }

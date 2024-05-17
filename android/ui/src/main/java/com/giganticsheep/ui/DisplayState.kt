@@ -52,7 +52,7 @@ sealed class DisplayDataState<T : Any> : DisplayState {
         DisplayDataState<T>(),
         DisplayState.Loading
 
-    class Default<T : Any>(
+    class Data<T : Any>(
         val data: T,
     ) : DisplayDataState<T>(), DisplayState.Default
 
@@ -64,18 +64,17 @@ sealed class DisplayDataState<T : Any> : DisplayState {
         DisplayState.Error
 }
 
-
 fun <T : Any, U : Any> DataResponse<T>.toDisplayState(
     onErrorDismissed: () -> Unit,
     map: (T) -> U,
 ): DisplayDataState<U> = when (this) {
     is DataResponse.Error<T> -> DisplayDataState.Error(
         error = error.internalMessage,
-        title = null,// TODO
+        title = null, // TODO
         onDismissed = onErrorDismissed,
     )
 
-    is DataResponse.Success<T> -> DisplayDataState.Default(data = map(result))
+    is DataResponse.Success<T> -> DisplayDataState.Data(data = map(result))
 }
 
 fun <T : Any, U : Any> DataResponseState<T>.toDisplayState(
@@ -84,11 +83,11 @@ fun <T : Any, U : Any> DataResponseState<T>.toDisplayState(
 ): DisplayDataState<U> = when (this) {
     is DataResponseState.Error<T> -> DisplayDataState.Error(
         error = error.internalMessage,
-        title = null,// TODO
+        title = null, // TODO
         onDismissed = onErrorDismissed,
     )
 
-    is DataResponseState.Success<T> -> DisplayDataState.Default(data = map(result))
+    is DataResponseState.Data<T> -> DisplayDataState.Data(data = map(result))
 
     is DataResponseState.Loading<T> -> DisplayDataState.Loading()
     is DataResponseState.Empty<T> -> DisplayDataState.Uninitialised()
@@ -98,7 +97,7 @@ fun CompletableResponse.toDisplayState(onErrorDismissed: () -> Unit = {}): Displ
     when (this) {
         is CompletableResponse.Error -> DisplayScreenState.Error(
             error = error.internalMessage,
-            title = null,// TODO
+            title = null, // TODO
             onDismissed = onErrorDismissed,
         )
 
@@ -109,7 +108,7 @@ fun CompletableResponseState.toDisplayState(onErrorDismissed: () -> Unit = {}): 
     when (this) {
         is CompletableResponseState.Error -> DisplayScreenState.Error(
             error = error.internalMessage,
-            title = null,// TODO
+            title = null, // TODO
             onDismissed = onErrorDismissed,
         )
 

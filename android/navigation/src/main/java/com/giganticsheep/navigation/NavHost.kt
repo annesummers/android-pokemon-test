@@ -51,13 +51,14 @@ private fun NavGraphBuilder.buildGraph(
     navigationGraph.screens.forEach { destination ->
         composable(
             route = destination.routeString,
-            arguments = if (destination.details.args.isEmpty())
+            arguments = if (destination.details.args.isEmpty()) {
                 emptyList()
-            else destination.details.args.map {
-                navArgument(it) {
-
+            } else {
+                destination.details.args.map {
+                    navArgument(it) {
+                    }
                 }
-            }
+            },
         ) { backStackEntry ->
             val args = destination.details.args
                 .mapNotNull { key ->

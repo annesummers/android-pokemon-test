@@ -17,6 +17,8 @@ android {
 
     defaultConfig {
         minSdk = commonLibs.versions.android.min.get().toInt()
+
+        testInstrumentationRunner = "com.giganticsheep.ui.CustomTestRunner"
     }
 
     buildTypes {
@@ -65,15 +67,15 @@ dependencies {
 
     debugImplementation(androidLibs.bundles.compose.debug)
 
+    testImplementation(commonLibs.bundles.test)
+
     androidTestImplementation(platform(androidLibs.compose.bom))
     androidTestImplementation(androidLibs.compose.ui)
     androidTestImplementation(androidLibs.compose.test)
-/*
+
     androidTestImplementation(commonLibs.bundles.test)
-    androidTestImplementation(androidLibs.bundles.test.instrumentation)*/
+    androidTestImplementation(androidLibs.bundles.test.instrumentation)
+    androidTestImplementation(pokemonLibs.test.instrumentation.hilt)
 
-    //androidTestImplementation(libs.test.assertK)
-
-    testImplementation(commonLibs.bundles.test)
-    //testImplementation(libs.test.assertK)
+    androidTestImplementation(commonLibs.test.assertK)
 }

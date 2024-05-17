@@ -11,6 +11,6 @@ internal abstract class PokemonModule {
 
     @Binds
     abstract fun providesGenerationsRepository(
-        generationsRepository: InternalPokemonRepository
+        generationsRepository: InternalPokemonRepository,
     ): PokemonRepository
 }

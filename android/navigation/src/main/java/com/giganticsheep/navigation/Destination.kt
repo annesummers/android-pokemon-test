@@ -37,8 +37,8 @@ interface DestinationDetails {
     val asRoute: String
 }
 
-class RequestedDestinationDetails(
-    details: DestinationDetails,
+data class RequestedDestinationDetails(
+    private val details: DestinationDetails,
     val args: Map<String, String>,
 ) : DestinationDetails {
 
@@ -98,18 +98,21 @@ class RequestedDestination(
 
     override val details = destination.details.withArgs(args)
 
-    val navOptions = (popUpToString
-        ?.let {
-            destination.navOptions
-                .setPopUpTo(popUpToString, popUpInclusive)
-        }
-        ?: destination.navOptions)
+    val navOptions = (
+        popUpToString
+            ?.let {
+                destination.navOptions
+                    .setPopUpTo(popUpToString, popUpInclusive)
+            }
+            ?: destination.navOptions
+        )
         .build()
 
-    override val routeString: String = if (details.args.isEmpty())
+    override val routeString: String = if (details.args.isEmpty()) {
         destination.routeString
-    else details.args.entries.fold(destination.routeString) { route, entry ->
-        route.replace("{${entry.key}}", entry.value)
+    } else {
+        details.args.entries.fold(destination.routeString) { route, entry ->
+            route.replace("{${entry.key}}", entry.value)
+        }
     }
 }
-

@@ -135,7 +135,7 @@ sealed interface DataResponseState<T : Any> : ResponseState {
         override fun asTerminalState(): TerminalState<T> = error("Not terminal")
     }
 
-    class Success<T : Any>(
+    class Data<T : Any>(
         val result: T,
     ) : DataResponseState<T>,
         TerminalState<T>,
@@ -143,7 +143,7 @@ sealed interface DataResponseState<T : Any> : ResponseState {
 
         fun <R : Any> map(
             func: (T) -> R,
-        ): Success<R> = Success(func(result))
+        ): Data<R> = Data(func(result))
 
         override suspend fun onSuccess(
             action: (T) -> Unit,

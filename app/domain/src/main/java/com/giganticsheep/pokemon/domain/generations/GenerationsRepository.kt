@@ -4,7 +4,9 @@ import com.giganticsheep.pokemon.common.BackgroundDispatcher
 import com.giganticsheep.pokemon.data.generations.GenerationsApi
 import com.giganticsheep.pokemon.data.generations.model.Generation
 import com.giganticsheep.pokemon.data.generations.model.GenerationItem
+import com.giganticsheep.response.DataResponse
 import com.giganticsheep.response.DataResponseState
+import com.giganticsheep.response.dataCall
 import com.giganticsheep.response.dataCallFlow
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +27,7 @@ internal interface GenerationsRepository {
 
     suspend fun clearData()
 
-    suspend fun getGeneration(generationName: String): Flow<DataResponseState<Generation>>
+    suspend fun getGeneration(generationName: String): DataResponse<Generation>
 }
 
 @Singleton
@@ -49,8 +51,14 @@ internal class InternalGenerationsRepository @Inject constructor(
 
     override fun fetchGenerations() {
         dataCallFlow { generationsApi.getGenerations() }
-            .onEach { _generations.emit(it) }
-            .launchIn(scope)
+            .onEach {
+                when (it) {
+                    is DataResponseState.Empty -> Unit
+                    is DataResponseState.Error -> _generations.emit(it.map())
+                    is DataResponseState.Loading -> _generations.emit(it.map())
+                    is DataResponseState.Data -> _generations.emit(it.map { state -> state.results })
+                }
+            }.launchIn(scope)
     }
 
     override suspend fun clearData() {
@@ -59,7 +67,5 @@ internal class InternalGenerationsRepository @Inject constructor(
 
     override suspend fun getGeneration(
         generationName: String,
-    ) = dataCallFlow { generationsApi.getGeneration(generationName) }
-        .apply { launchIn(scope) }
+    ) = dataCall { generationsApi.getGeneration(generationName) }
 }
-

@@ -22,6 +22,7 @@ import io.ktor.http.isSuccess
 import kotlinx.serialization.SerializationException
 import kotlin.collections.set
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class HttpClientProvider(
@@ -42,10 +43,12 @@ class HttpClientProvider(
     }
 }
 
-abstract class HttpClient internal constructor(
+fun URLBuilder.appendPath(path: String) = appendPathSegments(path.split('/'))
+
+abstract class HttpClient protected constructor(
     loggerFactory: LoggerFactory,
     val baseUrl: URLBuilder,
-    val calls: HttpCalls,
+    private val calls: HttpCalls,
 ) {
 
     val logger by lazy { loggerFactory.logger(this) }
@@ -74,15 +77,16 @@ abstract class HttpClient internal constructor(
         ),
     )
 
-    suspend inline fun <reified R : Any> get(
+    suspend fun <R : Any> get(
         path: String,
         query: Map<String, String> = mapOf(),
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilderForResult.() -> Unit = {},
+        type: KType,
     ) = HttpRequestBuilderForResult(jsonUtilities) { callRequest ->
         calls.get(
             path = URLBuilder(baseUrl)
-                .appendPathSegments(path)
+                .appendPath(path)
                 .apply {
                     encodedParameters = ParametersBuilder(query.size)
                         .apply { query.forEach { append(it.key, it.value) } }
@@ -93,169 +97,234 @@ abstract class HttpClient internal constructor(
         )
     }
         .also(block)
-        .call<R>()
+        .call<R>(type)
 
-    suspend inline fun <reified B : Any> put(
+    suspend fun <B : Any> put(
         path: String,
-        query: Map<String, String> = mapOf(),  //TODO
+        query: Map<String, String> = mapOf(),
         body: B,
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilder.() -> Unit = {},
     ) = HttpRequestBuilder(jsonUtilities) { callRequest ->
         calls.put(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            body,
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            body = body,
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
         .call()
 
-    suspend inline fun <reified B : Any, reified R : Any> putForResult(
+    suspend fun <B : Any, R : Any> putForResult(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         body: B,
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilderForResult.() -> Unit = {},
+        type: KType,
     ) = HttpRequestBuilderForResult(jsonUtilities) { callRequest ->
         calls.put(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            body,
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            body = body,
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
-        .call<R>()
+        .call<R>(type)
 
-    suspend inline fun <reified B : Any> post(
+    suspend fun <B : Any> post(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         body: B,
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilder.() -> Unit = {},
     ) = HttpRequestBuilder(jsonUtilities) { callRequest ->
         calls.post(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            body,
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            body = body,
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
         .call()
 
-    suspend inline fun post(
+    suspend fun post(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilder.() -> Unit = {},
     ) = HttpRequestBuilder(jsonUtilities) { callRequest ->
         calls.post(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
         .call()
 
-    suspend inline fun <reified B : Any, reified R : Any> postForResult(
+    suspend fun <B : Any, R : Any> postForResult(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         body: B,
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilderForResult.() -> Unit = {},
+        type: KType,
     ) = HttpRequestBuilderForResult(jsonUtilities) { callRequest ->
         calls.post(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            body,
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            body = body,
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
-        .call<R>()
+        .call<R>(type)
 
-    suspend inline fun <reified R : Any> postForResult(
+    suspend fun <R : Any> postForResult(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilderForResult.() -> Unit = {},
+        type: KType,
     ) = HttpRequestBuilderForResult(jsonUtilities) { callRequest ->
         calls.post(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
-        .call<R>()
+        .call<R>(type)
 
-    suspend inline fun <reified B : Any> delete(
+    suspend fun <B : Any> delete(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         body: B,
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilder.() -> Unit = {},
     ) = HttpRequestBuilder(jsonUtilities) { callRequest ->
         calls.delete(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            body,
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            body = body,
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
         .call()
 
-    suspend inline fun <reified B : Any, reified R : Any> deleteForResult(
+    suspend fun <B : Any, R : Any> deleteForResult(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         body: B,
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilderForResult.() -> Unit = {},
+        type: KType,
     ) = HttpRequestBuilderForResult(jsonUtilities) { callRequest ->
         calls.delete(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            body,
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            body = body,
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
-        .call<R>()
+        .call<R>(type)
 
-    suspend inline fun delete(
+    suspend fun delete(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilder.() -> Unit = {},
     ) = HttpRequestBuilder(jsonUtilities) { callRequest ->
         calls.delete(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
         .call()
 
-    suspend inline fun <reified R : Any> deleteForResult(
+    suspend fun <R : Any> deleteForResult(
         path: String,
-        query: Map<String, String> = mapOf(), //TODO
+        query: Map<String, String> = mapOf(),
         jsonUtilities: JsonUtilities = JsonUtilities.get(),
         block: HttpRequestBuilderForResult.() -> Unit = {},
+        type: KType,
     ) = HttpRequestBuilderForResult(jsonUtilities) { callRequest ->
         calls.delete(
-            URLBuilder(baseUrl).appendPathSegments(path).buildString(),
-            callRequest,
+            path = URLBuilder(baseUrl)
+                .appendPath(path)
+                .apply {
+                    encodedParameters = ParametersBuilder(query.size)
+                        .apply { query.forEach { append(it.key, it.value) } }
+                }
+                .buildString(),
+            callRequest = callRequest,
             serverRequest = serverRequestBuilder,
         )
     }
         .also(block)
-        .call<R>()
+        .call<R>(type)
 
     open inner class HttpRequestBuilder(
         val jsonUtilities: JsonUtilities, // for test mocking
@@ -290,16 +359,16 @@ abstract class HttpClient internal constructor(
         call = call,
     ) {
 
-        suspend inline fun <reified R : Any> call(): R = try {
+        suspend fun <R : Any> call(type: KType): R = try {
             call(callRequest)
                 .let { httpResponse ->
                     if (httpResponse.status.isSuccess()) {
                         httpResponse.body()
                             .let {
-                                if (R::class == String::class) {
+                                if (type == typeOf<String>()) {
                                     it as R
                                 } else {
-                                    jsonUtilities.jsonToObj(it, typeOf<R>()) as R
+                                    jsonUtilities.jsonToObj(it, type) as R
                                 }
                             }
                     } else {
@@ -357,3 +426,87 @@ abstract class HttpClient internal constructor(
             message?.contains("timeout") == true
     }
 }
+
+suspend inline fun <reified R : Any> HttpClient.postForResult(
+    path: String,
+    query: Map<String, String> = mapOf(),
+    jsonUtilities: JsonUtilities = JsonUtilities.get(),
+    noinline block: HttpClient.HttpRequestBuilderForResult.() -> Unit = {},
+) = postForResult<R>(
+    path = path,
+    query = query,
+    jsonUtilities = jsonUtilities,
+    block = block,
+    type = typeOf<R>(),
+)
+
+suspend inline fun <reified R : Any> HttpClient.deleteForResult(
+    path: String,
+    query: Map<String, String> = mapOf(),
+    jsonUtilities: JsonUtilities = JsonUtilities.get(),
+    noinline block: HttpClient.HttpRequestBuilderForResult.() -> Unit = {},
+) = deleteForResult<R>(
+    path = path,
+    query = query,
+    jsonUtilities = jsonUtilities,
+    block = block,
+    type = typeOf<R>(),
+)
+
+suspend inline fun <B : Any, reified R : Any> HttpClient.deleteForResult(
+    path: String,
+    query: Map<String, String> = mapOf(),
+    body: B,
+    jsonUtilities: JsonUtilities = JsonUtilities.get(),
+    noinline block: HttpClient.HttpRequestBuilderForResult.() -> Unit = {},
+) = deleteForResult<B, R>(
+    path = path,
+    query = query,
+    body = body,
+    jsonUtilities = jsonUtilities,
+    block = block,
+    type = typeOf<R>(),
+)
+
+suspend inline fun <B : Any, reified R : Any> HttpClient.postForResult(
+    path: String,
+    query: Map<String, String> = mapOf(),
+    body: B,
+    jsonUtilities: JsonUtilities = JsonUtilities.get(),
+    noinline block: HttpClient.HttpRequestBuilderForResult.() -> Unit = {},
+) = postForResult<B, R>(
+    path = path,
+    query = query,
+    body = body,
+    jsonUtilities = jsonUtilities,
+    block = block,
+    type = typeOf<R>(),
+)
+
+suspend inline fun <B : Any, reified R : Any> HttpClient.putForResult(
+    path: String,
+    query: Map<String, String> = mapOf(),
+    body: B,
+    jsonUtilities: JsonUtilities = JsonUtilities.get(),
+    noinline block: HttpClient.HttpRequestBuilderForResult.() -> Unit = {},
+) = putForResult<B, R>(
+    path = path,
+    query = query,
+    body = body,
+    jsonUtilities = jsonUtilities,
+    block = block,
+    type = typeOf<R>(),
+)
+
+suspend inline fun <reified R : Any> HttpClient.get(
+    path: String,
+    query: Map<String, String> = mapOf(),
+    jsonUtilities: JsonUtilities = JsonUtilities.get(),
+    noinline block: HttpClient.HttpRequestBuilderForResult.() -> Unit = {},
+) = get<R>(
+    path = path,
+    query = query,
+    jsonUtilities = jsonUtilities,
+    block = block,
+    type = typeOf<R>(),
+)

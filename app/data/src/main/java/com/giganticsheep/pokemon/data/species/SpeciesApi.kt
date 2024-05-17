@@ -1,51 +1,28 @@
 package com.giganticsheep.pokemon.data.species
 
+import com.giganticsheep.network.client.get
+import com.giganticsheep.pokemon.data.EndpointManager
+import com.giganticsheep.pokemon.data.EndpointManager.Companion.DEFAULT_LIMIT
+import com.giganticsheep.pokemon.data.EndpointManager.Companion.DEFAULT_OFFSET
 import com.giganticsheep.pokemon.data.network.client.PokemonHttpClient
 import com.giganticsheep.pokemon.data.network.client.PokemonImageHttpClient
 import com.giganticsheep.pokemon.data.species.model.Species
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.giganticsheep.pokemon.data.species.model.SpeciesItemsResponse
 import io.ktor.http.URLBuilder
-import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class SpeciesEndpointManager @Inject constructor() {
-    fun species(id: String) = "$species/$id"
-
-    val species = "pokemon-species"
-
-    val offset = "offset"
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-internal object SpeciesModule {
-
-    @Provides
-    @Singleton
-    fun providesSpeciesClient(
-        httpClient: PokemonHttpClient,
-        httpImageClient: PokemonImageHttpClient,
-        endpointManager: SpeciesEndpointManager,
-    ): SpeciesApi = InternalSpeciesApi(
-        httpClient,
-        httpImageClient,
-        endpointManager
-    )
-}
-
 interface SpeciesApi {
 
-    suspend fun getSpecies(page: Int = 0): List<Species>
+    suspend fun getSpecies(
+        page: Int = DEFAULT_OFFSET,
+        limit: Int = DEFAULT_LIMIT,
+    ): SpeciesItemsResponse
 
-    suspend fun getSpecies(id: String): Species
+    suspend fun getSpecies(nameOrId: String): Species
 
-    suspend fun getSpeciesImageUrl(id: String): Url
+    fun getSpeciesImageUrl(id: Int): String
 }
 
 internal class InternalSpeciesApi(
@@ -56,20 +33,31 @@ internal class InternalSpeciesApi(
 
     override suspend fun getSpecies(
         page: Int,
-    ) = httpClient.get<List<Species>>(
+        limit: Int,
+    ) = httpClient.get<SpeciesItemsResponse>(
         path = endpointManager.species,
-        query = mapOf(endpointManager.offset to page.toString())
+        query = mapOf(
+            EndpointManager.OFFSET to page.toString(),
+            EndpointManager.LIMIT to limit.toString(),
+        ),
     )
 
     override suspend fun getSpecies(
-        id: String,
+        nameOrId: String,
     ) = httpClient.get<Species>(
-        endpointManager.species(id)
+        endpointManager.species(nameOrId),
     )
 
-    override suspend fun getSpeciesImageUrl(
-        id: String,
+    override fun getSpeciesImageUrl(
+        id: Int,
     ) = URLBuilder(httpImageClient.baseUrl)
-        .appendPathSegments(id)
-        .build()
+        .appendPathSegments("$id.svg")
+        .buildString()
+}
+
+@Singleton
+class SpeciesEndpointManager @Inject constructor() : EndpointManager() {
+    fun species(id: String) = "$species/$id"
+
+    val species = "pokemon-species"
 }

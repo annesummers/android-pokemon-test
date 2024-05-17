@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_home">Pokemon Home</string>
+    <string name="button_show_generations">Show generations</string>
+    <string name="title_pokemon">Pokemon</string>
+    <string name="header_species">Species</string>
+    <string name="header_moves">Moves</string>
+    <string name="label_region">Region : %1$s</string>
+    <string name="button_random_pokemon">Random Pokemon</string>
+</resources>

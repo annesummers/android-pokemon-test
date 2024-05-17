@@ -1,9 +1,10 @@
 package com.giganticsheep.network.environment
 
 import io.ktor.http.URLBuilder
+import io.ktor.http.set
 
 open class Environment(
-    private val hosts: Map<Endpoint, Host>
+    private val hosts: Map<Endpoint, Host>,
 ) {
 
     fun url(

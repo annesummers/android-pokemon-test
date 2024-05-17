@@ -5,13 +5,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-
 @Composable
-fun HeadlineLargeText(text: String) {
+fun HeadlineLargeText(modifier: Modifier = Modifier, text: String) {
     Text(
-        modifier = Modifier,
+        modifier = modifier,
         text = text,
         color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.headlineLarge
+        style = MaterialTheme.typography.headlineLarge,
+    )
+}
+
+@Composable
+fun TitleText(modifier: Modifier = Modifier, text: String) {
+    Text(
+        modifier = modifier,
+        text = text,
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleLarge,
     )
 }

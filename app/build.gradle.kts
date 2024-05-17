@@ -26,7 +26,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.giganticsheep.ui.CustomTestRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -99,5 +100,6 @@ dependencies {
     implementation(pokemonLibs.hilt)
 
     testImplementation(commonLibs.bundles.test)
-    testImplementation(commonLibs.test.assertK)
+    testImplementation(commonLibs.test.junit)
+    testImplementation(androidLibs.test.mockk.android)
 }

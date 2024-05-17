@@ -4,6 +4,10 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.giganticsheep.network.client.HttpCalls
 import com.giganticsheep.network.client.HttpClient
+import com.giganticsheep.network.client.deleteForResult
+import com.giganticsheep.network.client.get
+import com.giganticsheep.network.client.postForResult
+import com.giganticsheep.network.client.putForResult
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import kotlinx.coroutines.test.runTest
@@ -11,20 +15,21 @@ import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
-internal class BaseHttpClientTest {
+internal class HttpClientTest {
 
     private val fakeLoggerFactory = FakeLoggerFactory()
     private val fakeJsonUtilities = FakeJsonUtilities()
 
     private val baseUrl = URLBuilder("https://baseUrl")
-    private val testUrl = "testUrl"
+    private val testUrl = "test/url"
+    private val testQuery = mapOf("field" to "value", "field2" to "value2")
 
     @Test
     fun `test get success`() = runTest {
         assertThat(
             createHttpClient(
                 FakeGetHttpCalls {
-                    assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                    assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
 
                     HttpResponse(
                         universalErrorTransformers = {},
@@ -33,7 +38,11 @@ internal class BaseHttpClientTest {
                         body = { fakeJsonUtilities.jsonString },
                     )
                 },
-            ).get<FakeJsonUtilities.TestClass>(path = testUrl, jsonUtilities = fakeJsonUtilities),
+            ).get<FakeJsonUtilities.TestClass>(
+                path = testUrl,
+                query = testQuery,
+                jsonUtilities = fakeJsonUtilities,
+            ),
         )
             .isEqualTo(fakeJsonUtilities.jsonObject)
     }
@@ -52,7 +61,7 @@ internal class BaseHttpClientTest {
     fun `test put`() = runTest {
         createHttpClient(
             FakePutHttpCalls {
-                assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
 
                 HttpResponse(
                     universalErrorTransformers = {},
@@ -61,7 +70,11 @@ internal class BaseHttpClientTest {
                     body = { "" },
                 )
             },
-        ).put(path = testUrl, body = fakeJsonUtilities.jsonObject)
+        ).put(
+            path = testUrl,
+            query = testQuery,
+            body = fakeJsonUtilities.jsonObject,
+        )
     }
 
     @Test
@@ -77,7 +90,8 @@ internal class BaseHttpClientTest {
         assertThat(
             createHttpClient(
                 FakePutHttpCalls {
-                    assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                    assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
+
                     HttpResponse(
                         universalErrorTransformers = {},
                         coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -87,6 +101,7 @@ internal class BaseHttpClientTest {
                 },
             ).putForResult<FakeJsonUtilities.TestClass, FakeJsonUtilities.TestClass>(
                 path = testUrl,
+                query = testQuery,
                 body = fakeJsonUtilities.jsonObject,
                 jsonUtilities = fakeJsonUtilities,
             ),
@@ -105,7 +120,7 @@ internal class BaseHttpClientTest {
     fun `test post`() = runTest {
         createHttpClient(
             FakePostHttpCalls {
-                assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
 
                 HttpResponse(
                     universalErrorTransformers = {},
@@ -114,14 +129,18 @@ internal class BaseHttpClientTest {
                     body = { "" },
                 )
             },
-        ).post(path = testUrl, body = fakeJsonUtilities.jsonObject)
+        ).post(
+            path = testUrl,
+            query = testQuery,
+            body = fakeJsonUtilities.jsonObject,
+        )
     }
 
     @Test
     fun `test post no body`() = runTest {
         createHttpClient(
             FakePostNoBodyHttpCalls {
-                assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
 
                 HttpResponse(
                     universalErrorTransformers = {},
@@ -130,7 +149,10 @@ internal class BaseHttpClientTest {
                     body = { "" },
                 )
             },
-        ).post(path = testUrl)
+        ).post(
+            path = testUrl,
+            query = testQuery,
+        )
     }
 
     @Test
@@ -138,7 +160,7 @@ internal class BaseHttpClientTest {
         assertThat(
             createHttpClient(
                 FakePostNoBodyHttpCalls {
-                    assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                    assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                     HttpResponse(
                         universalErrorTransformers = {},
                         coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -148,6 +170,7 @@ internal class BaseHttpClientTest {
                 },
             ).postForResult<FakeJsonUtilities.TestClass>(
                 path = testUrl,
+                query = testQuery,
                 jsonUtilities = fakeJsonUtilities,
             ),
         ).isEqualTo(fakeJsonUtilities.jsonObject)
@@ -166,7 +189,7 @@ internal class BaseHttpClientTest {
         assertThat(
             createHttpClient(
                 FakePostHttpCalls {
-                    assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                    assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                     HttpResponse(
                         universalErrorTransformers = {},
                         coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -176,6 +199,7 @@ internal class BaseHttpClientTest {
                 },
             ).postForResult<FakeJsonUtilities.TestClass, FakeJsonUtilities.TestClass>(
                 path = testUrl,
+                query = testQuery,
                 body = fakeJsonUtilities.jsonObject,
                 jsonUtilities = fakeJsonUtilities,
             ),
@@ -194,7 +218,7 @@ internal class BaseHttpClientTest {
     fun `test delete`() = runTest {
         createHttpClient(
             FakeDeleteHttpCalls {
-                assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                 HttpResponse(
                     universalErrorTransformers = {},
                     coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -203,7 +227,11 @@ internal class BaseHttpClientTest {
                 )
             },
         )
-            .delete(path = testUrl, body = fakeJsonUtilities.jsonObject)
+            .delete(
+                path = testUrl,
+                query = testQuery,
+                body = fakeJsonUtilities.jsonObject,
+            )
     }
 
     @Test
@@ -219,7 +247,7 @@ internal class BaseHttpClientTest {
         assertThat(
             createHttpClient(
                 FakeDeleteHttpCalls {
-                    assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                    assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                     HttpResponse(
                         universalErrorTransformers = {},
                         coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -230,6 +258,7 @@ internal class BaseHttpClientTest {
             )
                 .deleteForResult<FakeJsonUtilities.TestClass, FakeJsonUtilities.TestClass>(
                     path = testUrl,
+                    query = testQuery,
                     body = fakeJsonUtilities.jsonObject,
                     jsonUtilities = fakeJsonUtilities,
                 ),
@@ -248,7 +277,7 @@ internal class BaseHttpClientTest {
     fun `test delete no body`() = runTest {
         createHttpClient(
             FakeDeleteNoBodyHttpCalls {
-                assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                 HttpResponse(
                     universalErrorTransformers = {},
                     coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -257,7 +286,10 @@ internal class BaseHttpClientTest {
                 )
             },
         )
-            .delete(path = testUrl)
+            .delete(
+                path = testUrl,
+                query = testQuery,
+            )
     }
 
     @Test
@@ -266,8 +298,9 @@ internal class BaseHttpClientTest {
             createHttpClient(FakeDeleteHttpCalls { throw TestException() })
                 .delete(
                     path = testUrl,
+                    query = testQuery,
                     body = fakeJsonUtilities.jsonObject,
-                    jsonUtilities = fakeJsonUtilities
+                    jsonUtilities = fakeJsonUtilities,
                 )
         }
     }
@@ -277,7 +310,7 @@ internal class BaseHttpClientTest {
         assertThat(
             createHttpClient(
                 FakeDeleteNoBodyHttpCalls {
-                    assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                    assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                     HttpResponse(
                         universalErrorTransformers = {},
                         coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -288,6 +321,7 @@ internal class BaseHttpClientTest {
             )
                 .deleteForResult<FakeJsonUtilities.TestClass>(
                     path = testUrl,
+                    query = testQuery,
                     jsonUtilities = fakeJsonUtilities,
                 ),
         ).isEqualTo(fakeJsonUtilities.jsonObject)
@@ -307,7 +341,7 @@ internal class BaseHttpClientTest {
 
         val client = createHttpClient(
             FakeGetHttpCalls {
-                assertThat(it).isEqualTo("https://baseUrl/testUrl")
+                assertThat(it).isEqualTo("https://baseUrl/test/url?field=value&field2=value2")
                 HttpResponse(
                     universalErrorTransformers = {},
                     coreErrorTransformer = errorTransform<String> { _, _ -> TestException() },
@@ -320,7 +354,8 @@ internal class BaseHttpClientTest {
         assertFailsWith<SerializationException> {
             client.get<FakeJsonUtilities.TestClass>(
                 path = testUrl,
-                jsonUtilities = fakeJsonUtilities
+                query = testQuery,
+                jsonUtilities = fakeJsonUtilities,
             )
         }
     }

@@ -1,6 +1,6 @@
 package com.giganticsheep.pokemon.domain.generations
 
-import app.cash.turbine.turbineScope
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
@@ -8,10 +8,13 @@ import com.giganticsheep.error.HandledException
 import com.giganticsheep.pokemon.data.generations.GenerationsApi
 import com.giganticsheep.pokemon.data.generations.model.Generation
 import com.giganticsheep.pokemon.data.generations.model.GenerationItem
+import com.giganticsheep.pokemon.data.generations.model.GenerationItemsResponse
 import com.giganticsheep.pokemon.data.generations.model.RegionItem
+import com.giganticsheep.response.DataResponse
 import com.giganticsheep.response.DataResponseState
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -19,7 +22,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
-//TODO
+// TODO
 class GenerationsRepositoryTest {
 
     private class TestException : HandledException(internalMessage = "Test")
@@ -31,16 +34,21 @@ class GenerationsRepositoryTest {
         moves = listOf(),
         species = listOf(),
         id = GENERATION_ID,
-        mainRegion = RegionItem(GENERATION_REGION)
+        mainRegion = RegionItem(GENERATION_REGION),
     )
 
-    private val testGenerations = listOf(
-        GenerationItem(GENERATION_NAME),
-        GenerationItem(GENERATION_NAME + "1"),
-        GenerationItem(GENERATION_NAME + "2"),
-        GenerationItem(GENERATION_NAME + "3")
-    )
+    private val testGenerationResponse =
+        GenerationItemsResponse(
+            count = 4,
+            results = listOf(
+                GenerationItem(GENERATION_NAME),
+                GenerationItem(GENERATION_NAME + "1"),
+                GenerationItem(GENERATION_NAME + "2"),
+                GenerationItem(GENERATION_NAME + "3"),
+            ),
+        )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(TestCoroutineScheduler())
 
     private lateinit var repository: InternalGenerationsRepository
@@ -49,53 +57,67 @@ class GenerationsRepositoryTest {
     fun setup() {
         repository = InternalGenerationsRepository(
             api,
-            testDispatcher
+            testDispatcher,
         )
     }
 
     @Test
-    fun `when getGeneration by name then return generation`() = runTest(testDispatcher) {
+    fun `when clearData then generations Flow emits Empty`() = runTest {
+        repository.generations.test {
+            assertThat(awaitItem()) // Empty is emitted when the class is instantiated
+                .isInstanceOf(DataResponseState.Empty::class.java)
 
+            repository.clearData()
+
+            assertThat(awaitItem())
+                .isInstanceOf(DataResponseState.Empty::class.java)
+        }
+    }
+
+    @Test
+    fun `when getGeneration by name then return generation`() = runTest {
         coEvery {
             api.getGeneration(GENERATION_NAME)
         } returns testGeneration
 
-        assertThat(repository.getGeneration(GENERATION_NAME))
+        val result = repository.getGeneration(GENERATION_NAME)
+
+        assertThat(result)
+            .isInstanceOf(DataResponse.Success::class)
+
+        assertThat((result as DataResponse.Success).result)
             .isEqualTo(testGeneration)
     }
 
     @Test
-    fun `when fetchGenerations success then generations Flow returns generations`() = runTest(testDispatcher) {
+    fun `when fetchGenerations success then generations Flow emits Loading then Success with GenerationItemsResponse`() =
+        runTest {
+            coEvery {
+                api.getGenerations()
+            } returns testGenerationResponse
 
-        coEvery {
-            api.getGenerations()
-        } returns testGenerations
+            repository.generations.test {
+                assertThat(awaitItem()) // Empty is emitted when the class is instantiated
+                    .isInstanceOf(DataResponseState.Empty::class.java)
 
-        turbineScope {
-            repository.generations.testIn(this)
-                .apply {
+                repository.fetchGenerations()
 
-                    repository.fetchGenerations()
+                assertThat(awaitItem())
+                    .isInstanceOf(DataResponseState.Loading::class.java)
 
-                    awaitItem() // Empty
-                    awaitItem() // Loading
+                val item = awaitItem() // Data
 
-                    val item = awaitItem() // Data
+                assertThat(item)
+                    .isInstanceOf(DataResponseState.Data::class.java)
 
-                    assertThat(item)
-                        .isInstanceOf(DataResponseState.Success::class.java)
-
-                    assertThat((item as DataResponseState.Success).result)
-                        .isEqualTo(testGenerations)
-                }
+                assertThat((item as DataResponseState.Data).result)
+                    .isEqualTo(testGenerationResponse.results)
+            }
         }
-    }
-
 
     companion object {
         private const val GENERATION_ID = 1
         private const val GENERATION_NAME = "GENERATION_NAME"
         private const val GENERATION_REGION = "GENERATION_REGION"
     }
-
 }

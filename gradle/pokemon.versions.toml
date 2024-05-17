@@ -3,22 +3,14 @@
 library-group = "com.giganticsheep.pokemon"
 library-version = "1.0.0"
 
-kotlin = "1.9.23"
-
 navigation = "2.7.7"
-coroutines = "1.8.0"
-lifecycle = "2.7.0"
 
 hilt = "2.51"
 hilt-navigation-compose = "1.2.0"
 hilt-compiler = "2.51"
-test-junit-android = "1.1.5"
-test-junit = "4.13.2"
-test-core = "1.5.0"
-test-runner = "1.5.2"
 ktor = "2.3.8"
 
-coil = "2.5.0"
+coil = "2.6.0"
 
 [libraries]
 
@@ -30,17 +22,15 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 
-test-instrumentation-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-junit-android" }
-test-instrumentation-core = { group = "androidx.test", name = "core-ktx", version.ref = "test-core" }
-test-instrumentation-hilt = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt"}
-test-instrumentation-runner = { group = "androidx.test", name = "runner", version.ref = "test-runner"}
-
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
+
+test-instrumentation-hilt = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt"}
 
 [bundles]
 
 compose-navigation = ["compose-navigation", "compose-navigation-hilt"]
-test-instrumentation = [ "test-instrumentation-core", "test-instrumentation-junit", "test-instrumentation-hilt", "test-instrumentation-runner" ]
+coil = ["coil", "coil-svg"]
 
 [plugins]
 

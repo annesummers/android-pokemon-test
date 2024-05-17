@@ -1,29 +1,45 @@
 package com.giganticsheep.pokemon.data.species.model
 
-import com.giganticsheep.pokemon.data.generations.model.Item
-import com.giganticsheep.pokemon.data.generations.model.RegionItem
-import com.giganticsheep.pokemon.data.moves.model.MoveItem
+import com.giganticsheep.pokemon.data.Item
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
-@Serializable
-data class SpeciesItemResponse(
-    @SerialName("count")
-    val count: Int,
-    @SerialName("results")
-    val results: List<SpeciesItem>
-)
 
 @Serializable
 data class SpeciesItem(
     @SerialName("name")
     override val name: String,
-): Item
+) : Item
 
 @Serializable
 data class Species(
     @SerialName("name")
-    val name: String,
+    val internalName: String,
     @SerialName("id")
     val id: Int,
+    @SerialName("names")
+    val names: List<Name>,
+    @SerialName("flavor_text_entries")
+    val descriptions: List<FlavorText>,
+) {
+    @Serializable
+    data class Name(
+        @SerialName("language")
+        val language: Language,
+        @SerialName("name")
+        val name: String,
+    )
+
+    @Serializable
+    data class FlavorText(
+        @SerialName("language")
+        val language: Language,
+        @SerialName("flavor_text")
+        val description: String,
+    )
+}
+
+@Serializable
+data class Language(
+    @SerialName("name")
+    val name: String,
 )

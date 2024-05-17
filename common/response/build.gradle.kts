@@ -47,6 +47,4 @@ dependencies {
 
     implementation(commonLibs.kotlinx.coroutines)
 
-    //testImplementation(commonLibs.junit)
-
 }

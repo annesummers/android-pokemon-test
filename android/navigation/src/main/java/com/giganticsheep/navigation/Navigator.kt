@@ -60,7 +60,7 @@ class Navigator {
                             navigationGraphs.navigate(
                                 direction.details,
                                 direction.popUpTo,
-                                direction.popUpInclusive
+                                direction.popUpInclusive,
                             )
 
                         is Direction.NavigateBack ->

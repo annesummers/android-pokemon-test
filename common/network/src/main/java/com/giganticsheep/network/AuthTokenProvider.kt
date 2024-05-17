@@ -11,5 +11,5 @@ interface AuthTokenProvider {
 @Serializable
 data class AuthToken(
     @SerialName("token")
-    val token: String
+    val token: String,
 )

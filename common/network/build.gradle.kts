@@ -55,5 +55,4 @@ dependencies {
     implementation(commonLibs.bundles.ktor)
 
     testImplementation(commonLibs.bundles.test)
-
 }

@@ -1,6 +1,6 @@
 package com.giganticsheep.pokemon.data.moves.model
 
-import com.giganticsheep.pokemon.data.generations.model.Item
+import com.giganticsheep.pokemon.data.Item
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -8,12 +8,4 @@ import kotlinx.serialization.Serializable
 data class MoveItem(
     @SerialName("name")
     override val name: String,
-): Item
-
-@Serializable
-data class Move(
-    @SerialName("id")
-    val id: String,
-    @SerialName("name")
-    val name: String,
-)
+) : Item

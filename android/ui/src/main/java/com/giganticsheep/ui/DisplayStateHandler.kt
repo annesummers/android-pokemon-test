@@ -31,7 +31,7 @@ internal class DisplayDataStateHandler<T : Any>(
     onErrorDismissed: () -> Unit,
 ) : DisplayStateHandler<DisplayDataState<T>>(
     backgroundContext,
-    onErrorDismissed
+    onErrorDismissed,
 ) {
 
     override val _displayState = MutableSharedFlow<DisplayDataState<T>>(1)
@@ -41,7 +41,7 @@ internal class DisplayDataStateHandler<T : Any>(
             }
         }
 
-    fun setDefault(data: T) = set(DisplayDataState.Default(data))
+    fun setDefault(data: T) = set(DisplayDataState.Data(data))
 
     override fun setLoading() = set(DisplayDataState.Loading())
 

@@ -104,7 +104,7 @@ abstract class BaseNavigationGraph<S : BaseScreenDestination> internal construct
         destination = this,
         popUpToString = popUpTo?.let { find(it)?.routeString },
         popUpInclusive = popUpInclusive,
-        args = args
+        args = args,
     )
 
     override val isCurrentScreen: Boolean

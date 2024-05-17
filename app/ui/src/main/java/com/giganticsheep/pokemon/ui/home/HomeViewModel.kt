@@ -1,13 +1,14 @@
 package com.giganticsheep.pokemon.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.giganticsheep.navigation.Navigator
 import com.giganticsheep.pokemon.common.BackgroundDispatcher
+import com.giganticsheep.pokemon.domain.pokemon.GetRandomPokemonUseCase
+import com.giganticsheep.pokemon.domain.pokemon.SetupPokemonUseCase
 import com.giganticsheep.pokemon.navigation.HomeNavigation
+import com.giganticsheep.pokemon.navigation.HomeNavigation.pokemonId
 import com.giganticsheep.pokemon.navigation.MainNavigator
-import com.giganticsheep.ui.DisplayScreenStateProvided
-import com.giganticsheep.ui.DisplayScreenStateProvider
+import com.giganticsheep.ui.launchWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
@@ -16,12 +17,29 @@ import javax.inject.Inject
 internal class HomeViewModel @Inject constructor(
     @MainNavigator val mainNavigator: Navigator,
     @BackgroundDispatcher val backgroundDispatcher: CoroutineDispatcher,
-) : ViewModel(),
-    DisplayScreenStateProvider by DisplayScreenStateProvided(backgroundDispatcher) {
+    private val getRandomPokemonUseCase: GetRandomPokemonUseCase,
+    private val setupUseCase: SetupPokemonUseCase,
+) : ViewModel() {
+
+    val setupDisplayState = setupUseCase.setupDisplayState
+    val randomPokemonDisplayState = getRandomPokemonUseCase.pokemonDisplayState
 
     init {
-        Log.d("HomeViewModel:", "init")
-        showDefault()
+        generateNewPokemon()
+    }
+
+    fun onPokemonClicked(id: Int) {
+        mainNavigator.navigate(
+            HomeNavigation.Screen.Pokemon
+                .withArgs(pokemonId to id.toString()),
+        )
+    }
+
+    fun generateNewPokemon() {
+        launchWith(backgroundDispatcher) {
+            setupUseCase.setup()
+                .doOnSuccess { getRandomPokemonUseCase.fetchRandomPokemon() }
+        }
     }
 
     fun onBrowseByGenerationClicked() {

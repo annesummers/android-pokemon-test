@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-
 object Padding {
-    val screenPaddingHorizontal = 12.dp
-    val screenPaddingVertical = 12.dp
+    val screenPaddingHorizontal = 16.dp
+    val screenPaddingVertical = 16.dp
 
     val cardSpacing = 16.dp
 

@@ -1,16 +1,12 @@
 package com.giganticsheep.pokemon.ui.generation
 
 import androidx.lifecycle.ViewModel
-import com.giganticsheep.pokemon.navigation.MainNavigator
 import com.giganticsheep.navigation.Navigator
 import com.giganticsheep.pokemon.common.BackgroundDispatcher
-import com.giganticsheep.pokemon.domain.generations.ShowGenerationUseCase
+import com.giganticsheep.pokemon.domain.generations.GetGenerationUseCase
 import com.giganticsheep.pokemon.navigation.HomeNavigation
-import com.giganticsheep.pokemon.navigation.HomeNavigation.moveId
-import com.giganticsheep.pokemon.navigation.HomeNavigation.pokemonId
-import com.giganticsheep.pokemon.navigation.MainNavigation
-import com.giganticsheep.ui.DisplayScreenStateProvided
-import com.giganticsheep.ui.DisplayScreenStateProvider
+import com.giganticsheep.pokemon.navigation.HomeNavigation.pokemonName
+import com.giganticsheep.pokemon.navigation.MainNavigator
 import com.giganticsheep.ui.launchWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,10 +16,10 @@ import javax.inject.Inject
 internal class GenerationViewModel @Inject constructor(
     @MainNavigator val mainNavigator: Navigator,
     @BackgroundDispatcher val backgroundDispatcher: CoroutineDispatcher,
-    private val showGenerationUseCase: ShowGenerationUseCase
+    private val showGenerationUseCase: GetGenerationUseCase,
 ) : ViewModel() {
 
-    val generation = showGenerationUseCase.generation
+    val generationDisplayState = showGenerationUseCase.generationDisplayState
 
     fun setup(generationName: String) {
         launchWith(backgroundDispatcher) {
@@ -31,12 +27,15 @@ internal class GenerationViewModel @Inject constructor(
         }
     }
 
-    fun onMoveClicked(s: String) {
-        mainNavigator.navigate(HomeNavigation.Screen.Move.withArgs(moveId to s))
+    fun onUpClicked() {
+        mainNavigator.navigateBack()
     }
 
+    fun onMoveClicked(name: String) {
+        // not implemented
+    }
 
-    fun onSpeciesClicked(s: String) {
-        mainNavigator.navigate(HomeNavigation.Screen.Pokemon.withArgs(pokemonId to s))
+    fun onSpeciesClicked(name: String) {
+        mainNavigator.navigate(HomeNavigation.Screen.Pokemon.withArgs(pokemonName to name))
     }
 }

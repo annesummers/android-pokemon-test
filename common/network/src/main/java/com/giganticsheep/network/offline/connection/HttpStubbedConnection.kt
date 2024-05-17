@@ -24,10 +24,10 @@ internal class HttpStubbedConnection(
 
     private val stubs by lazy {
         stubs
-        .fold(mutableListOf<HttpEndpointStub>()) { acc, collector ->
-            acc.apply { addAll(collector.stubs) }
-        }
-        .groupBy { it.call.type }
+            .fold(mutableListOf<HttpEndpointStub>()) { acc, collector ->
+                acc.apply { addAll(collector.stubs) }
+            }
+            .groupBy { it.call.type }
     }
 
     override fun stubs(

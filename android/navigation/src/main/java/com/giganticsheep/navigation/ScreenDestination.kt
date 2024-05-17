@@ -77,7 +77,7 @@ abstract class BaseScreenDestination internal constructor(
         destination = this,
         popUpToString = popUpTo?.let { internalGraph.findRoute(it) },
         popUpInclusive = popUpInclusive,
-        args = args
+        args = args,
     )
 }
 

@@ -20,8 +20,7 @@ android {
     defaultConfig {
         minSdk = commonLibs.versions.android.min.get().toInt()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        testInstrumentationRunner = "com.giganticsheep.pokemon.ui.CustomTestRunner"
     }
 
     buildTypes {
@@ -78,6 +77,7 @@ dependencies {
 
     implementation(commonLibs.kotlinx.coroutines)
     implementation(androidLibs.kotlinx.immutable)
+    implementation(pokemonLibs.bundles.coil)
 
     implementation(platform(androidLibs.compose.bom))
     implementation(androidLibs.bundles.compose)
@@ -89,5 +89,16 @@ dependencies {
     implementation(pokemonLibs.compose.navigation.hilt)
 
     testImplementation(commonLibs.bundles.test)
-    testImplementation(commonLibs.test.assertK)
+    testImplementation(commonLibs.test.junit)
+    testImplementation(androidLibs.test.mockk.android)
+
+    androidTestImplementation(platform(androidLibs.compose.bom))
+    androidTestImplementation(androidLibs.compose.ui)
+    androidTestImplementation(androidLibs.compose.test)
+
+    androidTestImplementation(commonLibs.bundles.test)
+    androidTestImplementation(androidLibs.bundles.test.instrumentation)
+    androidTestImplementation(pokemonLibs.test.instrumentation.hilt)
+
+    androidTestImplementation(commonLibs.test.assertK)
 }

@@ -1,14 +1,11 @@
 package com.giganticsheep.pokemon.ui.generations
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.giganticsheep.navigation.Navigator
 import com.giganticsheep.pokemon.common.BackgroundDispatcher
-import com.giganticsheep.pokemon.domain.generations.ShowGenerationsUseCase
+import com.giganticsheep.pokemon.domain.generations.GetGenerationsUseCase
 import com.giganticsheep.pokemon.navigation.HomeNavigation
 import com.giganticsheep.pokemon.navigation.MainNavigator
-import com.giganticsheep.ui.DisplayScreenStateProvided
-import com.giganticsheep.ui.DisplayScreenStateProvider
 import com.giganticsheep.ui.launchWith
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,22 +15,26 @@ import javax.inject.Inject
 internal class GenerationsViewModel @Inject constructor(
     @MainNavigator val mainNavigator: Navigator,
     @BackgroundDispatcher val backgroundDispatcher: CoroutineDispatcher,
-    private val showGenerationsUseCase: ShowGenerationsUseCase,
+    private val getGenerationsUseCase: GetGenerationsUseCase,
 ) : ViewModel() {
 
-    val generations = showGenerationsUseCase.generations
+    val generationsDisplayState = getGenerationsUseCase.generationsDisplayState
 
     init {
         launchWith(backgroundDispatcher) {
-            showGenerationsUseCase.fetchGenerationsForDisplay()
+            getGenerationsUseCase.fetchGenerationsForDisplay()
         }
+    }
+
+    fun onUpClicked() {
+        mainNavigator.navigateBack()
     }
 
     fun onGenerationClicked(generationId: String) {
         mainNavigator.navigate(
             HomeNavigation.Screen
                 .Generation
-                .withArgs(HomeNavigation.generationId to generationId)
+                .withArgs(HomeNavigation.generationId to generationId),
         )
     }
 }

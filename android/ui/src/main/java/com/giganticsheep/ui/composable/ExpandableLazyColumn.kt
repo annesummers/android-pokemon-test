@@ -2,6 +2,8 @@ package com.giganticsheep.ui.composable
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -14,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 private fun Header(
@@ -24,9 +27,11 @@ private fun Header(
 ) {
     Row(modifier = modifier.clickable { onHeaderClicked() }) {
         Text(text = text)
-        if (isExpanded)
+        if (isExpanded) {
+            Icon(Icons.Filled.ExpandLess, contentDescription = "collapse")
+        } else {
             Icon(Icons.Filled.ExpandMore, contentDescription = "expand")
-        else Icon(Icons.Filled.ExpandLess, contentDescription = "collapse")
+        }
     }
 }
 
@@ -50,12 +55,13 @@ data class NestedList(
 
 @Composable
 fun ExpandableNestedList(
+    startCollapsed: Boolean,
     headerModifier: Modifier,
     itemModifier: Modifier,
     items: List<NestedList>,
 ) {
     val isExpandedMap = remember {
-        List(items.size) { index: Int -> index to true }
+        List(items.size) { index: Int -> index to !startCollapsed }
             .toMutableStateMap() // TODO
     }
 
@@ -67,11 +73,11 @@ fun ExpandableNestedList(
                     itemModifier = itemModifier,
                     sectionData = sectionData,
                     isExpanded = isExpandedMap[index] ?: true,
-                    onHeaderClick = { isExpandedMap[index] = !(isExpandedMap[index] ?: true) },
-                    onItemClick = sectionData.onItemClick
+                    onHeaderClick = { isExpandedMap[index] = !(isExpandedMap[index] ?: !startCollapsed) },
+                    onItemClick = sectionData.onItemClick,
                 )
             }
-        }
+        },
     )
 }
 
@@ -88,13 +94,21 @@ fun LazyListScope.sublist(
             modifier = headerModifier,
             text = sectionData.headerText,
             isExpanded = isExpanded,
-            onHeaderClicked = onHeaderClick
+            onHeaderClicked = onHeaderClick,
         )
+    }
+
+    item {
+        Spacer(modifier = Modifier.height(6.dp))
     }
 
     if (isExpanded) {
         items(sectionData.items) {
             Item(modifier = itemModifier, text = it, onItemClick = onItemClick)
         }
+    }
+
+    item {
+        Spacer(modifier = Modifier.height(6.dp))
     }
 }

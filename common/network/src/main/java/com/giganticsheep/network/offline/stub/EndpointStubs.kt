@@ -23,7 +23,7 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
 
     abstract fun getStub(callData: CallData): Stub
 
-    val stubs: List<Stub> by lazy { calls.map { getStub(it) }  }
+    val stubs: List<Stub> by lazy { calls.map { getStub(it) } }
 
     abstract class StubCreator<Stub : EndpointStub<*, *>>(
         val stub: Stub,
@@ -78,9 +78,11 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
         .apply {
             this.mapper = RequestResponseCallMap<Request, Response>(
                 requestType = typeOf<Request>(),
-                responseType = if (Response::class == Unit::class)
+                responseType = if (Response::class == Unit::class) {
                     null
-                else typeOf<Response>(),
+                } else {
+                    typeOf<Response>()
+                },
                 jsonUtilities = jsonUtilities,
             ) { mapper(it) }
         }
@@ -149,9 +151,11 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
                     .apply {
                         this.mapper = RequestResponseCallMap<Request, Response>(
                             requestType = typeOf<Request>(),
-                            responseType = if (Response::class == Unit::class)
+                            responseType = if (Response::class == Unit::class) {
                                 null
-                            else typeOf<Response>(),
+                            } else {
+                                typeOf<Response>()
+                            },
                             jsonUtilities = jsonUtilities,
                         ) { mapper(it) }
                     }

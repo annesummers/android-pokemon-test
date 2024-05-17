@@ -308,19 +308,22 @@ data class ColorFamily(
     val color: Color,
     val onColor: Color,
     val colorContainer: Color,
-    val onColorContainer: Color
+    val onColorContainer: Color,
 )
 
 val unspecified_scheme = ColorFamily(
-    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
+    Color.Unspecified,
+    Color.Unspecified,
+    Color.Unspecified,
+    Color.Unspecified,
 )
 
 @Composable
 fun PokemonTheme(
-    darkTheme: Boolean = true,//isSystemInDarkTheme(),
+    darkTheme: Boolean = true, // isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {

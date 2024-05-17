@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.giganticsheep.pokemon.domain.generations.GenerationItemDisplay
+import com.giganticsheep.pokemon.domain.generations.model.GenerationItemDisplay
 import com.giganticsheep.pokemon.ui.common.PokemonTopAppBar
 import com.giganticsheep.pokemon.ui.home.HomeNavigationGraph
 import com.giganticsheep.pokemon.ui.theme.Padding
@@ -33,21 +33,28 @@ internal fun GenerationsScreen(
     navigationGraph: HomeNavigationGraph,
     generationsViewModel: GenerationsViewModel = hiltViewModel(navigationGraph.graphNavEntry),
 ) {
-    val generationsState by generationsViewModel.generations.displayState.collectDisplayDataStateAsState()
+    val generationsState by generationsViewModel.generationsDisplayState.collectDisplayDataStateAsState()
 
     GenerationsContent(
         generationsState = generationsState,
-        onGenerationClicked = remember { generationsViewModel::onGenerationClicked }
+        onUpClicked = remember { generationsViewModel::onUpClicked },
+        onGenerationClicked = remember { generationsViewModel::onGenerationClicked },
     )
 }
 
 @Composable
 internal fun GenerationsContent(
     generationsState: DisplayDataState<ImmutableList<GenerationItemDisplay>>,
+    onUpClicked: () -> Unit,
     onGenerationClicked: (generationId: String) -> Unit,
 ) {
     Scaffold(
-        topBar = { PokemonTopAppBar() },
+        topBar = {
+            PokemonTopAppBar(
+                title = "Generations",
+                onUpClicked = onUpClicked,
+            )
+        },
     ) {
         HandleDisplayState(
             displayState = generationsState,
@@ -58,7 +65,7 @@ internal fun GenerationsContent(
                         .screenPadding(it),
                     contentAlignment = Alignment.Center,
                 ) { Text(error, color = MaterialTheme.colorScheme.primary) }
-            }
+            },
         ) { item ->
             Box(
                 modifier = Modifier
@@ -76,7 +83,7 @@ internal fun GenerationsContent(
 }
 
 @Composable
-fun GenerationItem(
+internal fun GenerationItem(
     generation: GenerationItemDisplay,
     onGenerationClicked: (String) -> Unit,
 ) {
@@ -92,21 +99,20 @@ fun GenerationItem(
 @Preview(showBackground = true)
 @Composable
 fun GenerationsPreview() {
-
     PokemonTheme {
         GenerationsContent(
-            DisplayDataState.Default(
+            DisplayDataState.Data(
                 listOf(
                     GenerationItemDisplay(
-                        "Kanto"
+                        "Kanto",
                     ),
                     GenerationItemDisplay(
-                        "Jhoto"
-                    )
-                ).toImmutableList()
+                        "Jhoto",
+                    ),
+                ).toImmutableList(),
             ),
-            onGenerationClicked = {}
+            onGenerationClicked = {},
+            onUpClicked = {},
         )
     }
 }
-

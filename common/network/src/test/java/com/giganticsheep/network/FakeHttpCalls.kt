@@ -1,7 +1,15 @@
 package com.giganticsheep.network
 
 import com.giganticsheep.network.client.HttpCalls
+import com.giganticsheep.network.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.http.URLBuilder
+
+class FakeHttpClient(fakeHttpCalls: HttpCalls) : HttpClient(
+    FakeLoggerFactory(),
+    URLBuilder(),
+    fakeHttpCalls,
+)
 
 class FakeGetHttpCalls(
     private val fakeResponse: (String) -> HttpResponse,
@@ -10,40 +18,40 @@ class FakeGetHttpCalls(
     override suspend fun get(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = fakeResponse(path)
 
     override suspend fun <B : Any> put(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> post(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun post(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun delete(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> delete(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 }
 
@@ -54,40 +62,40 @@ class FakePutHttpCalls(
     override suspend fun get(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> put(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = fakeResponse(path)
 
     override suspend fun <B : Any> post(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun post(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun delete(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> delete(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 }
 
@@ -98,40 +106,40 @@ class FakePostHttpCalls(
     override suspend fun get(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> put(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> post(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = fakeResponse(path)
 
     override suspend fun post(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun delete(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> delete(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 }
 
@@ -142,40 +150,40 @@ class FakePostNoBodyHttpCalls(
     override suspend fun get(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> put(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> post(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun post(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = fakeResponse(path)
 
     override suspend fun delete(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> delete(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 }
 
@@ -186,40 +194,40 @@ class FakeDeleteHttpCalls(
     override suspend fun get(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> put(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> post(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun post(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun delete(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> delete(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = fakeResponse(path)
 }
 
@@ -230,39 +238,39 @@ class FakeDeleteNoBodyHttpCalls(
     override suspend fun get(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> put(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun <B : Any> post(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun post(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 
     override suspend fun delete(
         path: String,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = fakeResponse(path)
 
     override suspend fun <B : Any> delete(
         path: String,
         body: B,
         callRequest: HttpRequestBuilder.() -> Unit,
-        serverReqeust: HttpRequestBuilder.() -> Unit,
+        serverRequest: HttpRequestBuilder.() -> Unit,
     ) = error("")
 }

@@ -1,33 +1,22 @@
 package com.giganticsheep.pokemon.data.generations.model
 
+import com.giganticsheep.pokemon.data.Item
 import com.giganticsheep.pokemon.data.moves.model.MoveItem
 import com.giganticsheep.pokemon.data.species.model.SpeciesItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GenerationItemResponse(
-    @SerialName("count")
-    val count: Int,
-    @SerialName("results")
-    val results: List<GenerationItem>
-)
-
-interface Item {
-    val name: String
-}
-
-@Serializable
 data class GenerationItem(
     @SerialName("name")
     override val name: String,
-): Item
+) : Item
 
 @Serializable
 data class RegionItem(
     @SerialName("name")
     override val name: String,
-): Item
+) : Item
 
 @Serializable
 data class Generation(

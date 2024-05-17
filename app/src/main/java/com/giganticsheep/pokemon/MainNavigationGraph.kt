@@ -9,7 +9,6 @@ import com.giganticsheep.pokemon.navigation.MainNavigation
 import com.giganticsheep.pokemon.splash.SplashScreen
 import com.giganticsheep.pokemon.ui.home.HomeNavigationGraph
 
-
 @Immutable
 class MainNavigationGraph(
     navHostController: NavHostController,
