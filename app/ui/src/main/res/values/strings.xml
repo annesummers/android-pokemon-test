@@ -7,4 +7,5 @@
     <string name="header_moves">Moves</string>
     <string name="label_region">Region : %1$s</string>
     <string name="button_random_pokemon">Random Pokemon</string>
+    <string name="action_go_up">go up</string>
 </resources>

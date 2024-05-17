@@ -7,6 +7,7 @@ import com.giganticsheep.network.offline.responder.http.MatchBodyFileHttpRespond
 import com.giganticsheep.network.offline.responder.http.RequestToResponseHttpResponder
 import com.giganticsheep.network.offline.responder.http.ResponseCodeHttpResponder
 import com.giganticsheep.network.offline.responder.http.SubstitutionFileHttpResponder
+import com.giganticsheep.network.offline.responder.http.TrailingSubstitutionFileHttpResponder
 import com.giganticsheep.network.offline.response.HttpEndpointStub
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -14,7 +15,6 @@ import io.ktor.http.HttpStatusCode
 fun String.escapeForRegex() = replace("?", "\\?")
     .replace("$", "\\$")
     .replace(":", "\\:")
-    .replace("+", "\\+")
 
 abstract class HttpStubs(
     name: String,
@@ -73,7 +73,8 @@ abstract class HttpStubs(
                 status: HttpStatusCode,
                 filename: String?,
                 bodyMatch: String?,
-                substitution: String?,
+                regexSubstitution: String?,
+                trailingSubstitution: String?,
                 mapper: CallMap?,
             ) = HttpEndpointStub.create(
                 call = CallDataWrapper(call as CallData, "$name|${call.key}"),
@@ -81,7 +82,8 @@ abstract class HttpStubs(
                     status = status,
                     filename = filename,
                     bodyMatch = bodyMatch,
-                    substitution = substitution,
+                    regexSubstitution = regexSubstitution,
+                    trailingSubstitution = trailingSubstitution,
                     mapper = mapper,
                 ),
             )
@@ -92,7 +94,8 @@ abstract class HttpStubs(
                 status: HttpStatusCode,
                 filename: String?,
                 bodyMatch: String?,
-                substitution: String?,
+                regexSubstitution: String?,
+                trailingSubstitution: String?,
                 mapper: CallMap?,
             ) = filename
                 ?.let {
@@ -105,14 +108,27 @@ abstract class HttpStubs(
                                 match = bodyMatch,
                             )
                         }
-                        ?: substitution
+                        ?: regexSubstitution
                             ?.let {
                                 if (filename.contains(it)) {
                                     SubstitutionFileHttpResponder(
                                         status = status,
                                         filename = filename,
                                         fileUtilities = fileUtilities,
-                                        substitution = substitution,
+                                        substitution = regexSubstitution,
+                                    )
+                                } else {
+                                    null
+                                }
+                            }
+                        ?: trailingSubstitution
+                            ?.let {
+                                if (filename.contains(it)) {
+                                    TrailingSubstitutionFileHttpResponder(
+                                        status = status,
+                                        filename = filename,
+                                        fileUtilities = fileUtilities,
+                                        substitution = trailingSubstitution,
                                     )
                                 } else {
                                     null

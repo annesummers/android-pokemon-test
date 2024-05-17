@@ -2,7 +2,16 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="HomeContentTest">
+      <entry key="GenerationContentTest">
+        <State />
+      </entry>
+      <entry key="GenerationsContentTest">
+        <State />
+      </entry>
+      <entry key="PokemonContentTest">
+        <State />
+      </entry>
+      <entry key="Tests in 'com.giganticsheep.pokemon.ui'">
         <State />
       </entry>
       <entry key="android.app">
@@ -23,12 +32,6 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-05-13T08:34:11.144059Z" />
         </State>
-      </entry>
-      <entry key="whenHomeContentWithScreenStateErrorThenShowError()">
-        <State />
-      </entry>
-      <entry key="whenShowPokemonAndPokemonClickedThenAssertIsClicked()">
-        <State />
       </entry>
     </value>
   </component>

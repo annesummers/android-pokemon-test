@@ -42,18 +42,11 @@ compose-test = { module = "androidx.compose.ui:ui-test-junit4" }
 
 compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle"}
 
-#lifecycle-common =  { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "lifecycle"}
-
-#test-kotlin-annotations = { group = "org.jetbrains.kotlin", name = "kotlin-test-annotations-common", version.ref = "kotlin" }
-#test-kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
-
 test-instrumentation-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-junit-android" }
 test-instrumentation-core = { group = "androidx.test", name = "core-ktx", version.ref = "test-core" }
 test-instrumentation-runner = { group = "androidx.test", name = "runner", version.ref = "test-runner"}
 
 test-mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
-
-#androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-junit-android" }
 
 [bundles]
 

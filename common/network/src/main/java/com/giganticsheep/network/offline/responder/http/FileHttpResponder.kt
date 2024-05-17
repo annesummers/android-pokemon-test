@@ -54,6 +54,30 @@ internal class SubstitutionFileHttpResponder(
         ?: error("No match, check your substitution")
 }
 
+internal class TrailingSubstitutionFileHttpResponder(
+    status: HttpStatusCode,
+    filename: String,
+    fileUtilities: FileUtilities,
+    private val substitution: String,
+) : FileHttpResponder(
+    status = status,
+    filename = filename,
+    fileUtilities = fileUtilities,
+) {
+    override fun respond(
+        request: MockHttpRequest,
+    ) = MockHttpResponse(
+        request.respond(
+            fileUtilities.stringFromFile(filename.replace(substitution, match(request.path))),
+            status,
+        ),
+    )
+
+    private fun match(
+        path: String,
+    ) = path.split('/').last()
+}
+
 internal class MatchBodyFileHttpResponder(
     status: HttpStatusCode,
     filename: String,

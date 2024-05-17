@@ -41,13 +41,15 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
                     status = status,
                     filename = filename,
                     bodyMatch = bodyMatch,
-                    substitution = substitution,
+                    regexSubstitution = regexSubstitution,
+                    trailingSubstitution = trailingSubstitution,
                     mapper = mapper,
                 )
 
             var filename: String? = null
             var bodyMatch: String? = null
-            var substitution: String? = null
+            var regexSubstitution: String? = null
+            var trailingSubstitution: String? = null
             var mapper: CallMap? = null
             var status: HttpStatusCode = HttpStatusCode.OK
 
@@ -57,7 +59,8 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
                 status: HttpStatusCode,
                 filename: String?,
                 bodyMatch: String?,
-                substitution: String?,
+                regexSubstitution: String?,
+                trailingSubstitution: String?,
                 mapper: CallMap?,
             ): Stub
 
@@ -125,7 +128,7 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
         call: CallData,
         fileUtilities: FileUtilities,
     ): StubCreator.Builder<Stub>
-
+/*
     abstract class StubsBuilder<Stub : EndpointStub<*, *>>(
         val name: String,
         val fileUtilities: FileUtilities,
@@ -208,7 +211,7 @@ abstract class EndpointStubs<Stub : EndpointStub<*, *>> internal constructor(
             call: CallData,
             fileUtilities: FileUtilities,
         ): StubCreator.Builder<Stub>
-    }
+    }*/
 }
 
 interface CallMap {

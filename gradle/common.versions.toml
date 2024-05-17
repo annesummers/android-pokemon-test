@@ -13,7 +13,6 @@ agp = "8.3.2"
 kotlin = "1.9.24"
 ksp = "1.9.24-1.0.20"
 
-core-ktx = "1.13.1"
 coroutines = "1.8.1"
 
 test-junit = "4.13.2"
@@ -22,7 +21,6 @@ linter = "3.14.0"
 ktor = "2.3.8"
 kotlinx-serialization-json = "1.6.0"
 
-annotation = "1.8.0"
 assertK = "0.28.0"
 turbine = "1.0.0"
 
@@ -38,10 +36,7 @@ ktor-contentNegotiation = { group = "io.ktor", name = "ktor-client-content-negot
 ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-mock = { group = "io.ktor", name = "ktor-client-mock", version.ref = "ktor" }
 
-#core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
-
 test-kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
-#test-kotlin-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 
 test-kotlin-annotations = { group = "org.jetbrains.kotlin", name = "kotlin-test-annotations-common", version.ref = "kotlin" }
 test-kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
@@ -50,8 +45,6 @@ test-assertK = { group = "com.willowtreeapps.assertk", name = "assertk", version
 test-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 test-junit = { group = "junit", name = "junit", version.ref = "test-junit" }
-
-#annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 
 [bundles]
 

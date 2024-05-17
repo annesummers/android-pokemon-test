@@ -1,6 +1,5 @@
 package com.giganticsheep.pokemon.ui.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
+import com.giganticsheep.pokemon.ui.R
 import com.giganticsheep.pokemon.ui.theme.Padding
 import com.giganticsheep.pokemon.ui.theme.customColor1Dark
 
@@ -39,7 +40,7 @@ fun PokemonTopAppBar(
                 ?.let { upClicked ->
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = null, // decorative element
+                        contentDescription = stringResource(R.string.action_go_up), // decorative element
                         modifier = Modifier.clickable { upClicked() },
                     )
                 }
@@ -59,8 +60,6 @@ fun PokemonImage(
     pokemon: PokemonDisplay,
     onPokemonClicked: ((Int) -> Unit)? = null,
 ) {
-    Log.d("Image", pokemon.imageUrl)
-
     Box(
         contentAlignment = Alignment.TopCenter,
         modifier = Modifier
