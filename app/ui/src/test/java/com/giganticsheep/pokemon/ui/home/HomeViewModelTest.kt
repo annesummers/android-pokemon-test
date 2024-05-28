@@ -1,13 +1,12 @@
 package com.giganticsheep.pokemon.ui.home
 
-import com.giganticsheep.error.HandledException
+import com.giganticsheep.displaystate.DisplayDataState
+import com.giganticsheep.displaystate.DisplayScreenState
 import com.giganticsheep.navigation.Navigator
 import com.giganticsheep.pokemon.domain.pokemon.GetRandomPokemonUseCase
 import com.giganticsheep.pokemon.domain.pokemon.SetupPokemonUseCase
+import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
 import com.giganticsheep.pokemon.navigation.HomeNavigation
-import com.giganticsheep.response.CompletableResponse
-import com.giganticsheep.ui.DisplayDataState
-import com.giganticsheep.ui.DisplayScreenState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -22,16 +21,21 @@ import org.junit.Before
 import org.junit.Test
 
 internal class HomeViewModelTest {
-    private class TestException : HandledException(internalMessage = "Test")
 
     private val mockNavigator = mockk<Navigator>(relaxUnitFun = true)
     private val mockGetRandomPokemonUseCase = mockk<GetRandomPokemonUseCase>(relaxUnitFun = true) {
-        every { pokemonDisplayState } returns flowOf(DisplayDataState.Uninitialised())
+        every { displayState } returns flowOf(DisplayDataState.Uninitialised())
     }
     private val mockSetupPokemonUseCase = mockk<SetupPokemonUseCase>(relaxUnitFun = true) {
-        every { setupDisplayState } returns flowOf(DisplayScreenState.Uninitialised)
-        coEvery { setup() } returns CompletableResponse.Success
+        every { displayState } returns flowOf(DisplayScreenState.Uninitialised)
     }
+
+    private val testPokemonDisplay = PokemonDisplay(
+        id = SPECIES_ID,
+        name = SPECIES_DISPLAY_NAME,
+        descriptions = listOf(SPECIES_DESCRIPTION),
+        imageUrl = SPECIES_IMAGE_URL,
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(TestCoroutineScheduler())
@@ -50,17 +54,34 @@ internal class HomeViewModelTest {
 
     @Test
     fun `when init then setup and generate new pokemon`() = runTest {
+        coEvery { mockSetupPokemonUseCase() } answers {
+            every { mockSetupPokemonUseCase.displayState } returns flowOf(
+                DisplayScreenState.Loading,
+                DisplayScreenState.Default
+            )
+        }
+        coEvery { mockGetRandomPokemonUseCase() } answers {
+            every { mockGetRandomPokemonUseCase.displayState } returns flowOf(
+                DisplayDataState.Loading(),
+                DisplayDataState.Data(testPokemonDisplay)
+            )
+        }
         coVerify {
-            mockSetupPokemonUseCase.setup()
-            mockGetRandomPokemonUseCase.fetchRandomPokemon()
+            mockSetupPokemonUseCase()
+            mockGetRandomPokemonUseCase()
         }
     }
 
     @Test
     fun `when init then setup error`() = runTest {
-        val testException = TestException()
+        val error = "error"
 
-        coEvery { mockSetupPokemonUseCase.setup() } returns CompletableResponse.Error(testException)
+        coEvery { mockSetupPokemonUseCase() } answers {
+            every { mockSetupPokemonUseCase.displayState } returns flowOf(
+                DisplayScreenState.Loading,
+                DisplayScreenState.Error(error = error, title = null, onDismissed = {}),
+            )
+        }
 
         viewModel = HomeViewModel(
             mainNavigator = mockNavigator,
@@ -70,30 +91,29 @@ internal class HomeViewModelTest {
         )
 
         coVerify(exactly = 2) {
-            mockSetupPokemonUseCase.setup()
+            mockSetupPokemonUseCase()
+            mockGetRandomPokemonUseCase()
         }
-
-        coVerify(exactly = 1) { mockGetRandomPokemonUseCase.fetchRandomPokemon() }
     }
 
     @Test
     fun `when generateNewPokemon then setup use case then fetch random pokemon`() = runTest {
         viewModel.generateNewPokemon()
 
-        coVerify(exactly = 2) { // also called as the viewmodel is created
-            mockSetupPokemonUseCase.setup()
-            mockGetRandomPokemonUseCase.fetchRandomPokemon()
+        coVerify {
+            mockSetupPokemonUseCase()
+            mockGetRandomPokemonUseCase()
         }
     }
 
     @Test
     fun `when onPokemonClicked then navigate to Pokemon Screen with arguments`() = runTest {
-        viewModel.onPokemonClicked(POKEMON_ID)
+        viewModel.onPokemonClicked(SPECIES_ID)
 
         coVerify {
             mockNavigator.navigate(
                 HomeNavigation.Screen.Pokemon
-                    .withArgs(HomeNavigation.pokemonId to POKEMON_ID.toString()),
+                    .withArgs(HomeNavigation.pokemonId to SPECIES_ID.toString()),
             )
         }
     }
@@ -109,7 +129,11 @@ internal class HomeViewModelTest {
         }
     }
 
+
     companion object {
-        private const val POKEMON_ID = 1
+        private const val SPECIES_ID = 1
+        private const val SPECIES_DESCRIPTION = "SPECIES_DESCRIPTION"
+        private const val SPECIES_DISPLAY_NAME = "SPECIES_DISPLAY_NAME"
+        private const val SPECIES_IMAGE_URL = "SPECIES_IMAGE_URL"
     }
 }

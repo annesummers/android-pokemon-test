@@ -25,7 +25,7 @@ import com.giganticsheep.pokemon.ui.theme.Padding
 import com.giganticsheep.pokemon.ui.theme.PokemonTheme
 import com.giganticsheep.pokemon.ui.theme.TitleText
 import com.giganticsheep.pokemon.ui.theme.screenPadding
-import com.giganticsheep.ui.DisplayDataState
+import com.giganticsheep.displaystate.DisplayDataState
 import com.giganticsheep.ui.HandleDisplayState
 import com.giganticsheep.ui.collectDisplayDataStateAsState
 import com.giganticsheep.ui.composable.ExpandableNestedList
@@ -54,7 +54,7 @@ internal fun GenerationScreen(
 
 @Composable
 internal fun GenerationContent(
-    generationState: DisplayDataState<GenerationDisplay>,
+    generationState: com.giganticsheep.displaystate.DisplayDataState<GenerationDisplay>,
     onUpClicked: () -> Unit,
     onMoveClicked: (String) -> Unit,
     onSpeciesClicked: (String) -> Unit,
@@ -62,7 +62,7 @@ internal fun GenerationContent(
     Scaffold(
         topBar = {
             PokemonTopAppBar(
-                title = if (generationState is DisplayDataState.Data) {
+                title = if (generationState is com.giganticsheep.displaystate.DisplayDataState.Data) {
                     generationState.data.name
                 } else {
                     "Generation"
@@ -111,7 +111,7 @@ fun Generation(
 fun GenerationPreview() {
     PokemonTheme {
         GenerationContent(
-            DisplayDataState.Data(
+            com.giganticsheep.displaystate.DisplayDataState.Data(
                 GenerationDisplay(
                     1,
                     "kanto",

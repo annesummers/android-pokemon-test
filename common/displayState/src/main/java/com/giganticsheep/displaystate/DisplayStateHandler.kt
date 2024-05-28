@@ -1,4 +1,4 @@
-package com.giganticsheep.ui
+package com.giganticsheep.displaystate
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

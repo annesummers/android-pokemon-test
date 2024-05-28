@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import assertk.assertThat
 import assertk.assertions.isTrue
 import com.giganticsheep.pokemon.domain.generations.model.GenerationItemDisplay
-import com.giganticsheep.ui.DisplayDataState
+import com.giganticsheep.displaystate.DisplayDataState
 import kotlinx.collections.immutable.toImmutableList
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +24,7 @@ internal class GenerationsContentTest {
 
         composeTestRule.setContent {
             GenerationsContent(
-                generationsState = DisplayDataState.Data(
+                generationsState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     listOf(GenerationItemDisplay(generationName)).toImmutableList(),
                 ),
                 onUpClicked = { },
@@ -42,7 +42,7 @@ internal class GenerationsContentTest {
 
         composeTestRule.setContent {
             GenerationsContent(
-                generationsState = DisplayDataState.Error(
+                generationsState = com.giganticsheep.displaystate.DisplayDataState.Error(
                     errorString,
                     null,
                 ) {},
@@ -61,7 +61,7 @@ internal class GenerationsContentTest {
 
         composeTestRule.setContent {
             GenerationsContent(
-                generationsState = DisplayDataState.Data(
+                generationsState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     listOf(GenerationItemDisplay(generationName)).toImmutableList(),
                 ),
                 onUpClicked = { },
@@ -82,7 +82,7 @@ internal class GenerationsContentTest {
 
         composeTestRule.setContent {
             GenerationsContent(
-                generationsState = DisplayDataState.Data(
+                generationsState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     listOf(GenerationItemDisplay(generationName)).toImmutableList(),
                 ),
                 onUpClicked = { clicked = true },

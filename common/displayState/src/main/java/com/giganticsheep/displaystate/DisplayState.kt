@@ -1,4 +1,4 @@
-package com.giganticsheep.ui
+package com.giganticsheep.displaystate
 
 import com.giganticsheep.response.CompletableResponse
 import com.giganticsheep.response.CompletableResponseState
@@ -20,26 +20,50 @@ sealed interface DisplayState {
     }
 }
 
-sealed class DisplayScreenState : DisplayState {
+sealed interface DisplayScreenState : DisplayState {
+
+    sealed interface MappableScreenState : DisplayScreenState {
+
+        fun <T : Any> map(): DisplayDataState<T>
+    }
 
     object Uninitialised :
-        DisplayScreenState(),
-        DisplayState.Loading
+        MappableScreenState,
+        DisplayState.Uninitialised {
+
+        override fun <T : Any> map() = DisplayDataState.Uninitialised<T>()
+    }
 
     object Loading :
-        DisplayScreenState(),
-        DisplayState.Loading
+        MappableScreenState,
+        DisplayState.Loading {
 
-    object Default :
-        DisplayScreenState(),
-        DisplayState.Default
+        override fun <T : Any> map() = DisplayDataState.Loading<T>()
+    }
 
     data class Error(
         override val error: String,
         override val title: String?,
         override val onDismissed: () -> Unit,
-    ) : DisplayScreenState(),
-        DisplayState.Error
+    ) : MappableScreenState,
+        DisplayState.Error {
+
+        override fun <T : Any> map() = DisplayDataState.Error<T>(
+            error = error,
+            title = title,
+            onDismissed = onDismissed
+        )
+    }
+
+    object Default :
+        DisplayScreenState,
+        DisplayState.Default
+
+    fun <T : Any> mapToDataState(dataState: DisplayDataState<T>) = when (this) {
+        Default -> dataState
+        is MappableScreenState -> map()
+    }
+
 }
 
 sealed class DisplayDataState<T : Any> : DisplayState {
@@ -52,9 +76,10 @@ sealed class DisplayDataState<T : Any> : DisplayState {
         DisplayDataState<T>(),
         DisplayState.Loading
 
-    class Data<T : Any>(
+    data class Data<T : Any>(
         val data: T,
-    ) : DisplayDataState<T>(), DisplayState.Default
+    ) : DisplayDataState<T>(),
+        DisplayState.Default
 
     data class Error<T : Any>(
         override val error: String,
@@ -74,7 +99,11 @@ fun <T : Any, U : Any> DataResponse<T>.toDisplayState(
         onDismissed = onErrorDismissed,
     )
 
-    is DataResponse.Success<T> -> DisplayDataState.Data(data = map(result))
+    is DataResponse.Success<T> -> DisplayDataState.Data(
+        data = map(
+            result
+        )
+    )
 }
 
 fun <T : Any, U : Any> DataResponseState<T>.toDisplayState(
@@ -87,7 +116,11 @@ fun <T : Any, U : Any> DataResponseState<T>.toDisplayState(
         onDismissed = onErrorDismissed,
     )
 
-    is DataResponseState.Data<T> -> DisplayDataState.Data(data = map(result))
+    is DataResponseState.Data<T> -> DisplayDataState.Data(
+        data = map(
+            result
+        )
+    )
 
     is DataResponseState.Loading<T> -> DisplayDataState.Loading()
     is DataResponseState.Empty<T> -> DisplayDataState.Uninitialised()

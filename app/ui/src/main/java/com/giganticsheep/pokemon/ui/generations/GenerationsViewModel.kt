@@ -18,11 +18,11 @@ internal class GenerationsViewModel @Inject constructor(
     private val getGenerationsUseCase: GetGenerationsUseCase,
 ) : ViewModel() {
 
-    val generationsDisplayState = getGenerationsUseCase.generationsDisplayState
+    val generationsDisplayState = getGenerationsUseCase.displayState
 
     init {
         launchWith(backgroundDispatcher) {
-            getGenerationsUseCase.fetchGenerationsForDisplay()
+            getGenerationsUseCase()
         }
     }
 

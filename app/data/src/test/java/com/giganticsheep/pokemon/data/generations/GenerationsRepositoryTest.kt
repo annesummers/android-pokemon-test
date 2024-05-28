@@ -1,11 +1,10 @@
-package com.giganticsheep.pokemon.domain.generations
+package com.giganticsheep.pokemon.data.generations
 
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.giganticsheep.error.HandledException
-import com.giganticsheep.pokemon.data.generations.GenerationsApi
 import com.giganticsheep.pokemon.data.generations.model.Generation
 import com.giganticsheep.pokemon.data.generations.model.GenerationItem
 import com.giganticsheep.pokemon.data.generations.model.GenerationItemsResponse

@@ -83,6 +83,7 @@ dependencies {
     implementation(projects.app.common)
     implementation(projects.app.navigation)
     implementation(projects.app.ui)
+    implementation(projects.app.display)
 
     implementation(projects.android.navigation)
     implementation(projects.android.ui)

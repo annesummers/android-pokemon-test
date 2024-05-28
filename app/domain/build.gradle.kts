@@ -8,7 +8,7 @@ plugins {
 
 val javaVersion = JavaVersion.toVersion(commonLibs.versions.java.get())
 
-val name = "data"
+val name = "domain"
 
 group = pokemonLibs.versions.library.group.get()
 version = pokemonLibs.versions.library.version.get()
@@ -56,12 +56,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.app.data)
     implementation(projects.app.common)
-
-    implementation(projects.android.ui)
-
-    implementation(projects.common.response)
+    implementation(projects.common.displayState)
 
     implementation(androidLibs.kotlinx.immutable)
 

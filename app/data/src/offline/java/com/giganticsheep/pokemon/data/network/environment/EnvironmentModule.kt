@@ -13,5 +13,5 @@ object EnvironmentModule {
 
     @Provides
     @Singleton
-    fun providesEnvironment(): Environment = PokemonEnvironment.Offline
+    fun providesEnvironment(): Environment = com.giganticsheep.pokemon.display.network.environment.PokemonEnvironment.Offline
 }

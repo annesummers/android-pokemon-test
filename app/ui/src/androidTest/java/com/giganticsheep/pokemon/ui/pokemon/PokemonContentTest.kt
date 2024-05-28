@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import assertk.assertThat
 import assertk.assertions.isTrue
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
-import com.giganticsheep.ui.DisplayDataState
+import com.giganticsheep.displaystate.DisplayDataState
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,7 +24,7 @@ internal class PokemonContentTest {
 
         composeTestRule.setContent {
             PokemonContent(
-                pokemonState = DisplayDataState.Data(
+                pokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         id = 1,
                         name = pokemonName,
@@ -46,7 +46,7 @@ internal class PokemonContentTest {
 
         composeTestRule.setContent {
             PokemonContent(
-                pokemonState = DisplayDataState.Error(
+                pokemonState = com.giganticsheep.displaystate.DisplayDataState.Error(
                     errorString,
                     null,
                 ) {},
@@ -65,7 +65,7 @@ internal class PokemonContentTest {
 
         composeTestRule.setContent {
             PokemonContent(
-                pokemonState = DisplayDataState.Data(
+                pokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         id = 1,
                         name = pokemonName,

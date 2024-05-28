@@ -1,11 +1,11 @@
-package com.giganticsheep.pokemon.domain.pokemon
+package com.giganticsheep.pokemon.data.species
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.giganticsheep.error.HandledException
-import com.giganticsheep.pokemon.data.species.SpeciesApi
 import com.giganticsheep.pokemon.data.species.model.Language
+import com.giganticsheep.pokemon.data.species.model.Pokemon
 import com.giganticsheep.pokemon.data.species.model.Species
 import com.giganticsheep.pokemon.data.species.model.SpeciesItem
 import com.giganticsheep.pokemon.data.species.model.SpeciesItemsResponse

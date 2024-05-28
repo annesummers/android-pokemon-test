@@ -57,7 +57,8 @@ android {
 
 dependencies {
 
-    api(projects.common.response)
+    implementation(projects.common.response)
+    implementation(projects.common.displayState)
 
     implementation(commonLibs.kotlinx.coroutines)
     implementation(androidLibs.kotlinx.coroutines.android)

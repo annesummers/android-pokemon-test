@@ -66,7 +66,7 @@ android {
 
 dependencies {
 
-    implementation(projects.common.response)
+    implementation(projects.common.displayState)
 
     implementation(projects.android.ui)
     implementation(projects.android.navigation)

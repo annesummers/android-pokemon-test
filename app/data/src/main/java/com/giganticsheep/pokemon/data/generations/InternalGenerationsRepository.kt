@@ -1,11 +1,9 @@
-package com.giganticsheep.pokemon.domain.generations
+package com.giganticsheep.pokemon.data.generations
 
 import com.giganticsheep.pokemon.common.BackgroundDispatcher
-import com.giganticsheep.pokemon.data.generations.GenerationsApi
-import com.giganticsheep.pokemon.data.generations.model.Generation
 import com.giganticsheep.pokemon.data.generations.model.GenerationItem
-import com.giganticsheep.response.DataResponse
 import com.giganticsheep.response.DataResponseState
+import com.giganticsheep.response.completableCall
 import com.giganticsheep.response.dataCall
 import com.giganticsheep.response.dataCallFlow
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,17 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-
-internal interface GenerationsRepository {
-
-    val generations: Flow<DataResponseState<List<GenerationItem>>>
-
-    fun fetchGenerations()
-
-    suspend fun clearData()
-
-    suspend fun getGeneration(generationName: String): DataResponse<Generation>
-}
 
 @Singleton
 internal class InternalGenerationsRepository @Inject constructor(
@@ -58,10 +45,11 @@ internal class InternalGenerationsRepository @Inject constructor(
                     is DataResponseState.Loading -> _generations.emit(it.map())
                     is DataResponseState.Data -> _generations.emit(it.map { state -> state.results })
                 }
-            }.launchIn(scope)
+            }
+            .launchIn(scope)
     }
 
-    override suspend fun clearData() {
+    override suspend fun clearData() = completableCall {
         _generations.emit(DataResponseState.Empty())
     }
 

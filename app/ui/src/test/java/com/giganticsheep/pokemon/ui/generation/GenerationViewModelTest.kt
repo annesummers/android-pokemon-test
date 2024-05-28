@@ -1,9 +1,11 @@
 package com.giganticsheep.pokemon.ui.generation
 
+import com.giganticsheep.displaystate.DisplayDataState
 import com.giganticsheep.navigation.Navigator
 import com.giganticsheep.pokemon.domain.generations.GetGenerationUseCase
+import com.giganticsheep.pokemon.domain.generations.model.GenerationDisplay
 import com.giganticsheep.pokemon.navigation.HomeNavigation
-import com.giganticsheep.ui.DisplayDataState
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -20,8 +22,16 @@ internal class GenerationViewModelTest {
 
     private val mockNavigator = mockk<Navigator>(relaxUnitFun = true)
     private val mockGetGenerationUseCase = mockk<GetGenerationUseCase>(relaxUnitFun = true) {
-        every { generationDisplayState } returns flowOf(DisplayDataState.Uninitialised())
+        every { displayState } returns flowOf(DisplayDataState.Uninitialised())
     }
+
+    private val testGenerationDisplay = GenerationDisplay(
+        name = GENERATION_NAME,
+        moves = listOf(MOVE),
+        species = listOf(SPECIES),
+        id = GENERATION_ID,
+        region = GENERATION_REGION,
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(TestCoroutineScheduler())
@@ -39,10 +49,17 @@ internal class GenerationViewModelTest {
 
     @Test
     fun `when setup with generationName then fetch generation`() = runTest {
+        coEvery { mockGetGenerationUseCase(GENERATION_NAME) } answers {
+            every { mockGetGenerationUseCase.displayState } returns flowOf(
+                DisplayDataState.Loading(),
+                DisplayDataState.Data(testGenerationDisplay)
+            )
+        }
+
         viewModel.setup(GENERATION_NAME)
 
         coVerify {
-            mockGetGenerationUseCase.fetchGenerationForDisplay(GENERATION_NAME)
+            mockGetGenerationUseCase(GENERATION_NAME)
         }
     }
 
@@ -60,12 +77,17 @@ internal class GenerationViewModelTest {
         viewModel.onSpeciesClicked(SPECIES)
 
         coVerify {
-            mockNavigator.navigate(HomeNavigation.Screen.Pokemon.withArgs(HomeNavigation.pokemonName to SPECIES))
+            mockNavigator.navigate(
+                HomeNavigation.Screen.Pokemon
+                    .withArgs(HomeNavigation.pokemonName to SPECIES)
+            )
         }
     }
 
     companion object {
+        private const val GENERATION_ID = 1
         private const val GENERATION_NAME = "GENERATION_NAME"
+        private const val GENERATION_REGION = "GENERATION_REGION"
         private const val MOVE = "MOVE"
         private const val SPECIES = "SPECIES"
     }

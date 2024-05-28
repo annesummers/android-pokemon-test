@@ -10,7 +10,6 @@ import com.giganticsheep.pokemon.data.species.model.Species
 import com.giganticsheep.pokemon.data.species.model.SpeciesItem
 import com.giganticsheep.pokemon.data.species.model.SpeciesItemsResponse
 import io.ktor.http.URLBuilder
-import io.ktor.http.set
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

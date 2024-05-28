@@ -13,6 +13,12 @@ internal object GenerationsModule {
 
     @Provides
     @Singleton
+    fun providesGenerationsRepository(
+        generationsRepository: InternalGenerationsRepository,
+    ): GenerationsRepository = generationsRepository
+
+    @Provides
+    @Singleton
     fun providesGenerationsApi(
         httpClient: PokemonHttpClient,
         endpointManager: GenerationEndpointManager,

@@ -9,8 +9,8 @@ import androidx.compose.ui.test.performClick
 import assertk.assertThat
 import assertk.assertions.isTrue
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
-import com.giganticsheep.ui.DisplayDataState
-import com.giganticsheep.ui.DisplayScreenState
+import com.giganticsheep.displaystate.DisplayDataState
+import com.giganticsheep.displaystate.DisplayScreenState
 import org.junit.Rule
 import org.junit.Test
 
@@ -25,8 +25,8 @@ internal class HomeContentTest {
 
         composeTestRule.setContent {
             HomeContent(
-                displayState = DisplayScreenState.Default,
-                randomPokemonState = DisplayDataState.Data(
+                displayState = com.giganticsheep.displaystate.DisplayScreenState.Default,
+                randomPokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         1,
                         pokemonName,
@@ -52,10 +52,10 @@ internal class HomeContentTest {
 
         composeTestRule.setContent {
             HomeContent(
-                displayState = DisplayScreenState.Error(errorString, null) {
+                displayState = com.giganticsheep.displaystate.DisplayScreenState.Error(errorString, null) {
                     dismissed = true
                 },
-                randomPokemonState = DisplayDataState.Data(
+                randomPokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         1,
                         "name",
@@ -84,8 +84,8 @@ internal class HomeContentTest {
 
         composeTestRule.setContent {
             HomeContent(
-                displayState = DisplayScreenState.Default,
-                randomPokemonState = DisplayDataState.Error(errorString, null) { },
+                displayState = com.giganticsheep.displaystate.DisplayScreenState.Default,
+                randomPokemonState = com.giganticsheep.displaystate.DisplayDataState.Error(errorString, null) { },
                 onPokemonClicked = { },
                 onGenerationsClicked = { },
                 generateNewPokemon = { },
@@ -104,8 +104,8 @@ internal class HomeContentTest {
 
         composeTestRule.setContent {
             HomeContent(
-                displayState = DisplayScreenState.Default,
-                randomPokemonState = DisplayDataState.Data(
+                displayState = com.giganticsheep.displaystate.DisplayScreenState.Default,
+                randomPokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         1,
                         pokemonName,
@@ -132,8 +132,8 @@ internal class HomeContentTest {
 
         composeTestRule.setContent {
             HomeContent(
-                displayState = DisplayScreenState.Default,
-                randomPokemonState = DisplayDataState.Data(
+                displayState = com.giganticsheep.displaystate.DisplayScreenState.Default,
+                randomPokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         1,
                         pokemonName,
@@ -160,8 +160,8 @@ internal class HomeContentTest {
 
         composeTestRule.setContent {
             HomeContent(
-                displayState = DisplayScreenState.Default,
-                randomPokemonState = DisplayDataState.Data(
+                displayState = com.giganticsheep.displaystate.DisplayScreenState.Default,
+                randomPokemonState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     PokemonDisplay(
                         1,
                         pokemonName,

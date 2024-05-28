@@ -1,12 +1,11 @@
 package com.giganticsheep.pokemon.ui.pokemon
 
-import com.giganticsheep.error.HandledException
+import com.giganticsheep.displaystate.DisplayDataState
+import com.giganticsheep.displaystate.DisplayScreenState
 import com.giganticsheep.navigation.Navigator
 import com.giganticsheep.pokemon.domain.pokemon.GetPokemonUseCase
 import com.giganticsheep.pokemon.domain.pokemon.SetupPokemonUseCase
-import com.giganticsheep.response.CompletableResponse
-import com.giganticsheep.ui.DisplayDataState
-import com.giganticsheep.ui.DisplayScreenState
+import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -21,17 +20,22 @@ import org.junit.Before
 import org.junit.Test
 
 internal class PokemonViewModelTest {
-    private class TestException : HandledException(internalMessage = "Test")
 
     private val mockNavigator = mockk<Navigator>(relaxUnitFun = true)
     private val mockGetPokemonUseCase = mockk<GetPokemonUseCase>(relaxUnitFun = true) {
-        every { pokemonDisplayState } returns flowOf(DisplayDataState.Uninitialised())
+        every { displayState } returns flowOf(DisplayDataState.Uninitialised())
     }
 
     private val mockSetupPokemonUseCase = mockk<SetupPokemonUseCase>(relaxUnitFun = true) {
-        every { setupDisplayState } returns flowOf(DisplayScreenState.Uninitialised)
-        coEvery { setup() } returns CompletableResponse.Success
+        every { displayState } returns flowOf(DisplayScreenState.Uninitialised)
     }
+
+    private val testPokemonDisplay = PokemonDisplay(
+        id = SPECIES_ID,
+        name = SPECIES_DISPLAY_NAME,
+        descriptions = listOf(SPECIES_DESCRIPTION),
+        imageUrl = SPECIES_IMAGE_URL,
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(TestCoroutineScheduler())
@@ -44,33 +48,25 @@ internal class PokemonViewModelTest {
             mainNavigator = mockNavigator,
             backgroundDispatcher = testDispatcher,
             getPokemonUseCase = mockGetPokemonUseCase,
-            setupUseCase = mockSetupPokemonUseCase,
+            setupPokemonUseCase = mockSetupPokemonUseCase,
         )
     }
 
     @Test
     fun `when setup with pokemon name then setup and fetch pokemon`() = runTest {
-        viewModel.setup(POKEMON_NAME)
-
-        coVerify {
-            mockSetupPokemonUseCase.setup()
-            mockGetPokemonUseCase.fetchPokemon(POKEMON_NAME)
-        }
-    }
-
-    @Test
-    fun `when setup with pokemon name then setup error`() = runTest {
-        val testException = TestException()
-
-        coEvery { mockSetupPokemonUseCase.setup() } returns CompletableResponse.Error(testException)
-
-        viewModel.setup(POKEMON_NAME)
-
-        coVerify {
-            mockSetupPokemonUseCase.setup()
+        coEvery { mockGetPokemonUseCase(SPECIES_NAME) } answers {
+            every { mockGetPokemonUseCase.displayState } returns flowOf(
+                DisplayDataState.Loading(),
+                DisplayDataState.Data(testPokemonDisplay),
+            )
         }
 
-        coVerify(exactly = 0) { mockGetPokemonUseCase.fetchPokemon(POKEMON_NAME) }
+        viewModel.setup(SPECIES_NAME)
+
+        coVerify {
+            mockSetupPokemonUseCase()
+            mockGetPokemonUseCase(SPECIES_NAME)
+        }
     }
 
     @Test
@@ -83,6 +79,10 @@ internal class PokemonViewModelTest {
     }
 
     companion object {
-        private const val POKEMON_NAME = "POKEMON_NAME"
+        private const val SPECIES_ID = 1
+        private const val SPECIES_NAME = "SPECIES_NAME"
+        private const val SPECIES_DESCRIPTION = "SPECIES_DESCRIPTION"
+        private const val SPECIES_DISPLAY_NAME = "SPECIES_DISPLAY_NAME"
+        private const val SPECIES_IMAGE_URL = "SPECIES_IMAGE_URL"
     }
 }

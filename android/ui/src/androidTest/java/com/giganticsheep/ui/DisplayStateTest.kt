@@ -22,7 +22,7 @@ internal class DisplayStateTest {
     @Test
     fun testDisplayScreenStateDefault() {
         composeTestRule.setContent {
-            HandleDisplayState(DisplayScreenState.Default) {
+            HandleDisplayState(com.giganticsheep.displaystate.DisplayScreenState.Default) {
                 Text("CONTENT")
             }
         }
@@ -36,7 +36,7 @@ internal class DisplayStateTest {
 
         composeTestRule.setContent {
             HandleDisplayState(
-                DisplayScreenState.Error(
+                com.giganticsheep.displaystate.DisplayScreenState.Error(
                     "error",
                     null,
                 ) {
@@ -64,7 +64,7 @@ internal class DisplayStateTest {
 
         composeTestRule.setContent {
             HandleDisplayState(
-                DisplayScreenState.Error(
+                com.giganticsheep.displaystate.DisplayScreenState.Error(
                     "error",
                     "title",
                 ) {
@@ -90,7 +90,7 @@ internal class DisplayStateTest {
     fun testDisplayScreenStateCustomError() {
         composeTestRule.setContent {
             HandleDisplayState(
-                DisplayScreenState.Error("error", null) {},
+                com.giganticsheep.displaystate.DisplayScreenState.Error("error", null) {},
                 onError = { error, _, _ -> Text(error) },
             ) {
                 Text("CONTENT")
@@ -105,7 +105,7 @@ internal class DisplayStateTest {
     @Test
     fun testDisplayScreenStateDefaultLoading() {
         composeTestRule.setContent {
-            HandleDisplayState(DisplayScreenState.Loading) {
+            HandleDisplayState(com.giganticsheep.displaystate.DisplayScreenState.Loading) {
                 Text("CONTENT")
             }
         }
@@ -118,7 +118,7 @@ internal class DisplayStateTest {
     fun testDisplayScreenStateCustomLoading() {
         composeTestRule.setContent {
             HandleDisplayState(
-                DisplayScreenState.Loading,
+                com.giganticsheep.displaystate.DisplayScreenState.Loading,
                 onLoading = { Text("LOADING") },
             ) {
                 Text("CONTENT")
@@ -135,7 +135,7 @@ internal class DisplayStateTest {
         val data = TestClass("id")
 
         composeTestRule.setContent {
-            HandleDisplayState(DisplayDataState.Data(data)) {
+            HandleDisplayState(com.giganticsheep.displaystate.DisplayDataState.Data(data)) {
                 Text(it.id)
             }
         }
@@ -149,7 +149,7 @@ internal class DisplayStateTest {
 
         composeTestRule.setContent {
             HandleDisplayState(
-                DisplayDataState.Error(
+                com.giganticsheep.displaystate.DisplayDataState.Error(
                     "error",
                     "title",
                 ) {
@@ -177,7 +177,7 @@ internal class DisplayStateTest {
 
         composeTestRule.setContent {
             HandleDisplayState(
-                DisplayDataState.Error(
+                com.giganticsheep.displaystate.DisplayDataState.Error(
                     "error",
                     "title",
                 ) {
@@ -202,7 +202,7 @@ internal class DisplayStateTest {
     @Test
     fun testDisplayDataStateDefaultLoading() {
         composeTestRule.setContent {
-            HandleDisplayState(DisplayDataState.Loading()) {
+            HandleDisplayState(com.giganticsheep.displaystate.DisplayDataState.Loading()) {
                 Text("CONTENT")
             }
         }

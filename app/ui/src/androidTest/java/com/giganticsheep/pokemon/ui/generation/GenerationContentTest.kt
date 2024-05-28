@@ -8,7 +8,7 @@ import androidx.compose.ui.test.performClick
 import assertk.assertThat
 import assertk.assertions.isTrue
 import com.giganticsheep.pokemon.domain.generations.model.GenerationDisplay
-import com.giganticsheep.ui.DisplayDataState
+import com.giganticsheep.displaystate.DisplayDataState
 import org.junit.Rule
 import org.junit.Test
 
@@ -26,7 +26,7 @@ internal class GenerationContentTest {
 
         composeTestRule.setContent {
             GenerationContent(
-                generationState = DisplayDataState.Data(
+                generationState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     GenerationDisplay(
                         id = 1,
                         region = regionName,
@@ -53,7 +53,7 @@ internal class GenerationContentTest {
 
         composeTestRule.setContent {
             GenerationContent(
-                generationState = DisplayDataState.Error(
+                generationState = com.giganticsheep.displaystate.DisplayDataState.Error(
                     errorString,
                     null,
                 ) {},
@@ -76,7 +76,7 @@ internal class GenerationContentTest {
 
         composeTestRule.setContent {
             GenerationContent(
-                generationState = DisplayDataState.Data(
+                generationState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     GenerationDisplay(
                         id = 1,
                         region = regionName,
@@ -108,7 +108,7 @@ internal class GenerationContentTest {
 
         composeTestRule.setContent {
             GenerationContent(
-                generationState = DisplayDataState.Data(
+                generationState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     GenerationDisplay(
                         id = 1,
                         region = regionName,
@@ -140,7 +140,7 @@ internal class GenerationContentTest {
 
         composeTestRule.setContent {
             GenerationContent(
-                generationState = DisplayDataState.Data(
+                generationState = com.giganticsheep.displaystate.DisplayDataState.Data(
                     GenerationDisplay(
                         id = 1,
                         region = regionName,

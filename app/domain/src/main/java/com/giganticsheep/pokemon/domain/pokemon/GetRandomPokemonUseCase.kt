@@ -1,32 +1,24 @@
 package com.giganticsheep.pokemon.domain.pokemon
 
+import com.giganticsheep.displaystate.ConditionalDataUseCase
 import com.giganticsheep.pokemon.common.BackgroundDispatcher
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
-import com.giganticsheep.pokemon.domain.pokemon.model.toDisplay
-import com.giganticsheep.ui.DisplayDataStateProvided
-import com.giganticsheep.ui.DisplayDataStateProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class GetRandomPokemonUseCase @Inject internal constructor(
-    @BackgroundDispatcher val dispatcher: CoroutineDispatcher,
-    private val pokemonRepository: PokemonRepository,
+    @BackgroundDispatcher dispatcher: CoroutineDispatcher,
+    private val setupPokemonProvider: SetupPokemonDisplayProvider,
+    private val pokemonDisplayProvider: PokemonDisplayProvider,
+) : ConditionalDataUseCase<PokemonDisplay>(
+    dispatcher = dispatcher,
+    initialProvider = setupPokemonProvider,
+    provider = pokemonDisplayProvider
 ) {
 
-    private val pokemonModel = PokemonModel()
+    suspend operator fun invoke() {
+        onInitialProviderDefault { pokemonDisplayProvider.providesRandomPokemon() }
 
-    val pokemonDisplayState = pokemonModel.displayState
-
-    suspend fun fetchRandomPokemon() {
-        pokemonModel.showLoading()
-
-        pokemonModel.showResult(pokemonRepository.getRandomPokemon()) { species ->
-            species.toDisplay()
-        }
+        setupPokemonProvider.providesSetup()
     }
-
-    private inner class PokemonModel :
-        DisplayDataStateProvider<Pokemon, PokemonDisplay> by DisplayDataStateProvided(
-            backgroundContext = dispatcher,
-        )
 }

@@ -1,6 +1,5 @@
-package com.giganticsheep.ui
+package com.giganticsheep.displaystate
 
-import com.giganticsheep.android.ui.BuildConfig
 import com.giganticsheep.error.HandledException
 import com.giganticsheep.response.CompletableResponse
 import com.giganticsheep.response.CompletableResponseState
@@ -11,6 +10,9 @@ import kotlin.coroutines.CoroutineContext
 
 interface DisplayStateProvider<S : DisplayState> {
     val displayState: Flow<S>
+}
+
+interface DisplayStateSetter {
 
     fun showLoading()
 
@@ -28,7 +30,7 @@ interface DisplayStateProvider<S : DisplayState> {
     fun onErrorDismissed()
 }
 
-interface DisplayScreenStateProvider : DisplayStateProvider<DisplayScreenState> {
+interface DisplayScreenStateSetter : DisplayStateProvider<DisplayScreenState>, DisplayStateSetter {
 
     fun showDefault()
 
@@ -37,7 +39,8 @@ interface DisplayScreenStateProvider : DisplayStateProvider<DisplayScreenState> 
     fun showResult(responseState: CompletableResponseState)
 }
 
-interface DisplayDataStateProvider<T : Any, U : Any> : DisplayStateProvider<DisplayDataState<U>> {
+interface DisplayDataStateSetter<T : Any, U : Any> : DisplayStateProvider<DisplayDataState<U>>,
+    DisplayStateSetter {
 
     fun showDefault(data: U)
 
@@ -46,10 +49,10 @@ interface DisplayDataStateProvider<T : Any, U : Any> : DisplayStateProvider<Disp
     fun showResult(responseState: DataResponseState<T>, map: (T) -> U)
 }
 
-class DisplayScreenStateProvided(
+class DisplayScreenStateSet(
     backgroundContext: CoroutineContext,
-) : DisplayStateProvided<DisplayScreenState>(),
-    DisplayScreenStateProvider {
+) : DisplayStateSet<DisplayScreenState>(),
+    DisplayScreenStateSetter {
 
     override val screenStateHandler = DisplayScreenStateHandler(backgroundContext)
 
@@ -66,11 +69,11 @@ class DisplayScreenStateProvided(
         screenStateHandler.set(responseState.toDisplayState())
 }
 
-class DisplayDataStateProvided<T : Any, U : Any>(
+class DisplayDataStateSet<T : Any, U : Any>(
     backgroundContext: CoroutineContext,
     onErrorDismissed: () -> Unit = {},
-) : DisplayStateProvided<DisplayDataState<U>>(onErrorDismissed),
-    DisplayDataStateProvider<T, U> {
+) : DisplayStateSet<DisplayDataState<U>>(onErrorDismissed),
+    DisplayDataStateSetter<T, U> {
 
     override val screenStateHandler = DisplayDataStateHandler<U>(backgroundContext, onErrorDismissed)
 
@@ -95,20 +98,21 @@ class DisplayDataStateProvided<T : Any, U : Any>(
         )
 }
 
-abstract class DisplayStateProvided<S : DisplayState> internal constructor(
+abstract class DisplayStateSet<S : DisplayState> internal constructor(
     private val _onErrorDismissed: () -> Unit = {},
-) : DisplayStateProvider<S> {
+) : DisplayStateProvider<S>, DisplayStateSetter {
 
     internal abstract val screenStateHandler: DisplayStateHandler<*>
 
     override fun showLoading() = screenStateHandler.setLoading()
 
+    // TODO debug
     override fun showError(
         error: Throwable,
         onDismissed: (() -> Unit)?,
     ) = screenStateHandler.setError(
         null,
-        if (BuildConfig.DEBUG && error is HandledException) {
+        if (error is HandledException) {
             error.internalMessage
         } else if (error.message.isNullOrBlank()) {
             "An error has occurred"

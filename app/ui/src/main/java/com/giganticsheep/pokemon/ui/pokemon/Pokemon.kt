@@ -24,7 +24,7 @@ import com.giganticsheep.pokemon.ui.home.HomeNavigationGraph
 import com.giganticsheep.pokemon.ui.theme.Padding
 import com.giganticsheep.pokemon.ui.theme.PokemonTheme
 import com.giganticsheep.pokemon.ui.theme.screenPadding
-import com.giganticsheep.ui.DisplayDataState
+import com.giganticsheep.displaystate.DisplayDataState
 import com.giganticsheep.ui.HandleDisplayState
 import com.giganticsheep.ui.collectDisplayDataStateAsState
 

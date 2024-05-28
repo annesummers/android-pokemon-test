@@ -31,8 +31,8 @@ import com.giganticsheep.pokemon.ui.common.PokemonTopAppBar
 import com.giganticsheep.pokemon.ui.theme.Padding
 import com.giganticsheep.pokemon.ui.theme.PokemonTheme
 import com.giganticsheep.pokemon.ui.theme.screenPadding
-import com.giganticsheep.ui.DisplayDataState
-import com.giganticsheep.ui.DisplayScreenState
+import com.giganticsheep.displaystate.DisplayDataState
+import com.giganticsheep.displaystate.DisplayScreenState
 import com.giganticsheep.ui.HandleDisplayState
 import com.giganticsheep.ui.collectDisplayDataStateAsState
 import com.giganticsheep.ui.collectDisplayScreenStateAsState
@@ -56,8 +56,8 @@ internal fun HomeScreen(
 
 @Composable
 internal fun HomeContent(
-    displayState: DisplayScreenState,
-    randomPokemonState: DisplayDataState<PokemonDisplay>,
+    displayState: com.giganticsheep.displaystate.DisplayScreenState,
+    randomPokemonState: com.giganticsheep.displaystate.DisplayDataState<PokemonDisplay>,
     onPokemonClicked: (Int) -> Unit,
     onGenerationsClicked: () -> Unit,
     generateNewPokemon: () -> Unit,
@@ -145,8 +145,8 @@ internal fun HomeContent(
 fun HomePreview() {
     PokemonTheme {
         HomeContent(
-            DisplayScreenState.Default,
-            DisplayDataState.Data(
+            com.giganticsheep.displaystate.DisplayScreenState.Default,
+            com.giganticsheep.displaystate.DisplayDataState.Data(
                 PokemonDisplay(
                     id = 1,
                     name = "Bulbasaur",

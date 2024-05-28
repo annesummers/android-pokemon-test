@@ -21,11 +21,14 @@ internal class HomeViewModel @Inject constructor(
     private val setupUseCase: SetupPokemonUseCase,
 ) : ViewModel() {
 
-    val setupDisplayState = setupUseCase.setupDisplayState
-    val randomPokemonDisplayState = getRandomPokemonUseCase.pokemonDisplayState
+    val setupDisplayState = setupUseCase.displayState
+    val randomPokemonDisplayState = getRandomPokemonUseCase.displayState
 
     init {
-        generateNewPokemon()
+        launchWith(backgroundDispatcher) {
+            setupUseCase()
+            getRandomPokemonUseCase()
+        }
     }
 
     fun onPokemonClicked(id: Int) {
@@ -37,8 +40,7 @@ internal class HomeViewModel @Inject constructor(
 
     fun generateNewPokemon() {
         launchWith(backgroundDispatcher) {
-            setupUseCase.setup()
-                .doOnSuccess { getRandomPokemonUseCase.fetchRandomPokemon() }
+            getRandomPokemonUseCase()
         }
     }
 

@@ -16,16 +16,15 @@ internal class PokemonViewModel @Inject constructor(
     @MainNavigator val mainNavigator: Navigator,
     @BackgroundDispatcher val backgroundDispatcher: CoroutineDispatcher,
     private val getPokemonUseCase: GetPokemonUseCase,
-    private val setupUseCase: SetupPokemonUseCase,
+    private val setupPokemonUseCase: SetupPokemonUseCase,
 ) : ViewModel() {
 
-    val setupDisplayState = setupUseCase.setupDisplayState
-    val pokemonDisplayState = getPokemonUseCase.pokemonDisplayState
+    val pokemonDisplayState = getPokemonUseCase.displayState
 
     fun setup(nameOrId: String) {
         launchWith(backgroundDispatcher) {
-            setupUseCase.setup()
-                .doOnSuccess { getPokemonUseCase.fetchPokemon(nameOrId) }
+            setupPokemonUseCase()
+            getPokemonUseCase(nameOrId)
         }
     }
 

@@ -1,10 +1,7 @@
 package com.giganticsheep.pokemon.data.generations
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
-@Singleton
-internal class GenerationEndpointManager @Inject constructor() {
+@javax.inject.Singleton
+internal class GenerationEndpointManager @javax.inject.Inject constructor() {
 
     val generation = "generation"
 

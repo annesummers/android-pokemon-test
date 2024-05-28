@@ -1,32 +1,25 @@
 package com.giganticsheep.pokemon.domain.pokemon
 
+import com.giganticsheep.displaystate.ConditionalDataUseCase
 import com.giganticsheep.pokemon.common.BackgroundDispatcher
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
-import com.giganticsheep.pokemon.domain.pokemon.model.toDisplay
-import com.giganticsheep.ui.DisplayDataStateProvided
-import com.giganticsheep.ui.DisplayDataStateProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class GetPokemonUseCase @Inject internal constructor(
-    @BackgroundDispatcher val dispatcher: CoroutineDispatcher,
-    private val pokemonRepository: PokemonRepository,
+    @BackgroundDispatcher dispatcher: CoroutineDispatcher,
+    private val setupPokemonProvider: SetupPokemonDisplayProvider,
+    private val pokemonDisplayProvider: PokemonDisplayProvider,
+) : ConditionalDataUseCase<PokemonDisplay>(
+    dispatcher = dispatcher,
+    initialProvider = setupPokemonProvider,
+    provider = pokemonDisplayProvider
 ) {
+    suspend operator fun invoke(
+        nameOrId: String,
+    ) {
+        onInitialProviderDefault { pokemonDisplayProvider.providesPokemon(nameOrId) }
 
-    private val pokemonModel = PokemonModel()
-
-    val pokemonDisplayState = pokemonModel.displayState
-
-    suspend fun fetchPokemon(nameOrId: String) {
-        pokemonModel.showLoading()
-
-        pokemonModel.showResult(pokemonRepository.getPokemon(nameOrId)) { species ->
-            species.toDisplay()
-        }
+        setupPokemonProvider.providesSetup()
     }
-
-    private inner class PokemonModel :
-        DisplayDataStateProvider<Pokemon, PokemonDisplay> by DisplayDataStateProvided(
-            backgroundContext = dispatcher,
-        )
 }

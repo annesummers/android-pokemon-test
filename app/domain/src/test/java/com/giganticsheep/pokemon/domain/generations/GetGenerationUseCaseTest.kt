@@ -4,37 +4,23 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import com.giganticsheep.error.HandledException
-import com.giganticsheep.pokemon.data.generations.model.Generation
-import com.giganticsheep.pokemon.data.generations.model.RegionItem
-import com.giganticsheep.pokemon.data.moves.model.MoveItem
-import com.giganticsheep.pokemon.data.species.model.SpeciesItem
+import com.giganticsheep.displaystate.DisplayDataState
 import com.giganticsheep.pokemon.domain.generations.model.GenerationDisplay
-import com.giganticsheep.response.DataResponse
-import com.giganticsheep.ui.DisplayDataState
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineScheduler
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
 internal class GetGenerationUseCaseTest {
 
-    private class TestException : HandledException(internalMessage = "Test")
+    private val testFlow = MutableStateFlow<DisplayDataState<GenerationDisplay>>(DisplayDataState.Uninitialised())
 
-    private val mockGenerationsRepository = mockk<GenerationsRepository>()
-
-    private val testGeneration = Generation(
-        name = GENERATION_NAME,
-        moves = listOf(MoveItem(MOVE)),
-        species = listOf(SpeciesItem(SPECIES)),
-        id = GENERATION_ID,
-        mainRegion = RegionItem(GENERATION_REGION),
-    )
+    private val mockDisplayProvider = mockk<GenerationDisplayProvider>(relaxUnitFun = true) {
+        every { displayState } returns testFlow
+    }
 
     private val testGenerationDisplay = GenerationDisplay(
         name = GENERATION_NAME,
@@ -44,30 +30,29 @@ internal class GetGenerationUseCaseTest {
         region = GENERATION_REGION,
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(TestCoroutineScheduler())
-
     private lateinit var useCase: GetGenerationUseCase
 
     @Before
     fun setup() {
         useCase = GetGenerationUseCase(
-            testDispatcher,
-            mockGenerationsRepository,
+            provider = mockDisplayProvider
         )
     }
 
     @Test
     fun `when fetchGenerationsForDisplay success then generationDisplayState emits Loading then Data with GenerationDisplay`() = runTest {
         coEvery {
-            mockGenerationsRepository.getGeneration(GENERATION_NAME)
-        } returns DataResponse.Success(testGeneration)
+            mockDisplayProvider.providesGeneration(GENERATION_NAME)
+        } coAnswers  {
+            testFlow.emit(DisplayDataState.Loading())
+            testFlow.emit(DisplayDataState.Data(testGenerationDisplay))
+        }
 
-        useCase.generationDisplayState.test {
+        useCase.displayState.test {
             assertThat(awaitItem())
                 .isInstanceOf(DisplayDataState.Uninitialised::class.java)
 
-            useCase.fetchGenerationForDisplay(GENERATION_NAME)
+            useCase(GENERATION_NAME)
 
             assertThat(awaitItem())
                 .isInstanceOf(DisplayDataState.Loading::class.java)
@@ -84,17 +69,20 @@ internal class GetGenerationUseCaseTest {
 
     @Test
     fun `when fetchGenerationsForDisplay error then generationDisplayState emits Loading then Error`() = runTest {
-        val testException = TestException()
+        val error = "error"
 
         coEvery {
-            mockGenerationsRepository.getGeneration(GENERATION_NAME)
-        } returns DataResponse.Error(testException)
+            mockDisplayProvider.providesGeneration(GENERATION_NAME)
+        } coAnswers  {
+            testFlow.emit(DisplayDataState.Loading())
+            testFlow.emit(DisplayDataState.Error(error = error, title = null, onDismissed = {}))
+        }
 
-        useCase.generationDisplayState.test {
+        useCase.displayState.test {
             assertThat(awaitItem())
                 .isInstanceOf(DisplayDataState.Uninitialised::class.java)
 
-            useCase.fetchGenerationForDisplay(GENERATION_NAME)
+            useCase(GENERATION_NAME)
 
             assertThat(awaitItem())
                 .isInstanceOf(DisplayDataState.Loading::class.java)
@@ -105,7 +93,7 @@ internal class GetGenerationUseCaseTest {
                 .isInstanceOf(DisplayDataState.Error::class.java)
 
             assertThat((item as DisplayDataState.Error<*>).error)
-                .isEqualTo(testException.internalMessage)
+                .isEqualTo(error)
         }
     }
 

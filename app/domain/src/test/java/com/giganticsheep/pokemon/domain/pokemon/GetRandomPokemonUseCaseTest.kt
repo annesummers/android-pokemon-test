@@ -4,14 +4,14 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import com.giganticsheep.error.HandledException
+import com.giganticsheep.displaystate.DisplayDataState
+import com.giganticsheep.displaystate.DisplayScreenState
 import com.giganticsheep.pokemon.domain.pokemon.model.PokemonDisplay
-import com.giganticsheep.response.CompletableResponse
-import com.giganticsheep.response.DataResponse
-import com.giganticsheep.ui.DisplayDataState
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -21,17 +21,19 @@ import org.junit.Test
 
 internal class GetRandomPokemonUseCaseTest {
 
-    private class TestException : HandledException(internalMessage = "Test")
+    private val testFlow =
+        MutableStateFlow<DisplayDataState<PokemonDisplay>>(DisplayDataState.Uninitialised())
 
-    private val mockPokemonRepository = mockk<PokemonRepository>()
+    private val setupTestFlow =
+        MutableStateFlow<DisplayScreenState>(DisplayScreenState.Uninitialised)
 
-    private val testPokemon = Pokemon(
-        id = SPECIES_ID,
-        name = SPECIES_DISPLAY_NAME,
-        descriptions = listOf(SPECIES_DESCRIPTION),
-        internalName = SPECIES_NAME,
-        imageUrl = SPECIES_IMAGE_URL,
-    )
+    private val mockDisplayProvider = mockk<PokemonDisplayProvider> {
+        every { displayState } returns testFlow
+    }
+
+    private val mockSetupDisplayProvider = mockk<SetupPokemonDisplayProvider> {
+        every { displayState } returns setupTestFlow
+    }
 
     private val testPokemonDisplay = PokemonDisplay(
         id = SPECIES_ID,
@@ -48,33 +50,32 @@ internal class GetRandomPokemonUseCaseTest {
     @Before
     fun setup() {
         useCase = GetRandomPokemonUseCase(
-            testDispatcher,
-            mockPokemonRepository,
+            dispatcher = testDispatcher,
+            setupPokemonProvider = mockSetupDisplayProvider,
+            pokemonDisplayProvider = mockDisplayProvider,
         )
     }
 
     @Test
-    fun `when setup success then do nothing`() = runTest {
-        coEvery {
-            mockPokemonRepository.setup()
-        } returns CompletableResponse.Success
-    }
-
-    @Test
-    fun `when fetchRandomPokemon success then pokemonDisplayState emits Loading then Data with PokemonDisplay`() =
+    fun `when providesSetup success and providesRandomPokemon success then displayState emits Data with PokemonDisplay`() =
         runTest {
             coEvery {
-                mockPokemonRepository.getRandomPokemon()
-            } returns DataResponse.Success(testPokemon)
+                mockSetupDisplayProvider.providesSetup()
+            } coAnswers  {
+                setupTestFlow.emit(DisplayScreenState.Default)
+            }
 
-            useCase.pokemonDisplayState.test {
+            coEvery {
+                mockDisplayProvider.providesRandomPokemon()
+            } coAnswers {
+                testFlow.emit(DisplayDataState.Data(testPokemonDisplay))
+            }
+
+            useCase.displayState.test {
                 assertThat(awaitItem())
                     .isInstanceOf(DisplayDataState.Uninitialised::class.java)
 
-                useCase.fetchRandomPokemon()
-
-                assertThat(awaitItem())
-                    .isInstanceOf(DisplayDataState.Loading::class.java)
+                useCase()
 
                 val item = awaitItem()
 
@@ -87,22 +88,27 @@ internal class GetRandomPokemonUseCaseTest {
         }
 
     @Test
-    fun `when fetchRandomPokemon error then pokemonDisplayState emits Loading then Error`() =
+    fun `when providesSetup success and providesRandomPokemon error then displayState emits Error`() =
         runTest {
-            val testException = TestException()
+            val error = "error"
 
             coEvery {
-                mockPokemonRepository.getRandomPokemon()
-            } returns DataResponse.Error(testException)
+                mockSetupDisplayProvider.providesSetup()
+            } coAnswers  {
+                setupTestFlow.emit(DisplayScreenState.Default)
+            }
 
-            useCase.pokemonDisplayState.test {
+            coEvery {
+                mockDisplayProvider.providesRandomPokemon()
+            } coAnswers {
+                testFlow.emit(DisplayDataState.Error(error = error, title = null, onDismissed = {}))
+            }
+
+            useCase.displayState.test {
                 assertThat(awaitItem())
                     .isInstanceOf(DisplayDataState.Uninitialised::class.java)
 
-                useCase.fetchRandomPokemon()
-
-                assertThat(awaitItem())
-                    .isInstanceOf(DisplayDataState.Loading::class.java)
+                useCase()
 
                 val item = awaitItem()
 
@@ -110,13 +116,12 @@ internal class GetRandomPokemonUseCaseTest {
                     .isInstanceOf(DisplayDataState.Error::class.java)
 
                 assertThat((item as DisplayDataState.Error<*>).error)
-                    .isEqualTo(testException.internalMessage)
+                    .isEqualTo(error)
             }
         }
 
     companion object {
         private const val SPECIES_ID = 1
-        private const val SPECIES_NAME = "SPECIES_NAME"
         private const val SPECIES_DESCRIPTION = "SPECIES_DESCRIPTION"
         private const val SPECIES_DISPLAY_NAME = "SPECIES_DISPLAY_NAME"
         private const val SPECIES_IMAGE_URL = "SPECIES_IMAGE_URL"

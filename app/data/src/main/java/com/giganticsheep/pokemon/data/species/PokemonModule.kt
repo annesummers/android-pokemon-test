@@ -10,11 +10,17 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object SpeciesModule {
+internal object PokemonModule {
 
     @Provides
     @Singleton
-    fun providesSpeciesApi(
+    fun providesPokemonRepository(
+        generationsRepository: InternalPokemonRepository,
+    ): PokemonRepository = generationsRepository
+
+    @Provides
+    @Singleton
+    fun providesPokemonApi(
         httpClient: PokemonHttpClient,
         httpImageClient: PokemonImageHttpClient,
         endpointManager: SpeciesEndpointManager,

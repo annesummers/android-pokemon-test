@@ -2,7 +2,8 @@ package com.giganticsheep.pokemon.data.generations
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.giganticsheep.pokemon.data.EndpointManager
+import com.giganticsheep.pokemon.data.EndpointManager.Companion.LIMIT
+import com.giganticsheep.pokemon.data.EndpointManager.Companion.OFFSET
 import com.giganticsheep.pokemon.data.generations.model.Generation
 import com.giganticsheep.pokemon.data.generations.model.GenerationItem
 import com.giganticsheep.pokemon.data.generations.model.GenerationItemsResponse
@@ -65,8 +66,8 @@ internal class GenerationsApiTest {
             mockHttpClient.get<GenerationItemsResponse>(
                 path = GENERATION,
                 query = mapOf(
-                    EndpointManager.OFFSET to "0",
-                    EndpointManager.LIMIT to "20",
+                    OFFSET to "0",
+                    LIMIT to "20",
                 ),
                 jsonUtilities = any(),
                 block = any(),
